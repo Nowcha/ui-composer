@@ -1,0 +1,101 @@
+import type { CatalogComponent } from "../../src/types/catalog";
+
+export const displayBasicComponents: CatalogComponent[] = [
+  {
+    id: "card",
+    name: "Card",
+    nameJa: "カード",
+    aliases: ["Panel", "Tile"],
+    description: "関連する情報をまとめて表示するコンテナ。",
+    category: "display",
+    isContainer: true,
+    typicalProps: [
+      { name: "title", type: "string", default: "カードタイトル" },
+      { name: "description", type: "string" },
+      { name: "hasFooter", type: "boolean", default: false },
+    ],
+    implementations: {
+      shadcn: "Card",
+      mui: "Card",
+      radix: null,
+      html: "<article>",
+    },
+    a11yNotes: ["カード全体をリンクにする場合は入れ子リンクを避ける"],
+  },
+  {
+    id: "table",
+    name: "Table",
+    nameJa: "テーブル",
+    aliases: ["Data table", "Grid"],
+    description: "行と列でデータを一覧表示する。",
+    category: "display",
+    isContainer: false,
+    typicalProps: [
+      { name: "columns", type: "string", default: "名前, ステータス, 更新日" },
+      { name: "rowCount", type: "number", default: 5 },
+      { name: "sortable", type: "boolean", default: false },
+      { name: "selectable", type: "boolean", default: false },
+    ],
+    implementations: {
+      shadcn: "Table",
+      mui: "Table",
+      radix: null,
+      html: "<table>",
+    },
+    a11yNotes: [
+      "th要素とscope属性で見出しを明示する",
+      "ソート可能な列は aria-sort を付与する",
+    ],
+  },
+  {
+    id: "badge",
+    name: "Badge",
+    nameJa: "バッジ",
+    aliases: ["Pill", "Status badge"],
+    description: "ステータスや件数を示す小さなラベル。",
+    category: "display",
+    isContainer: false,
+    typicalProps: [
+      { name: "label", type: "string", default: "新着" },
+      {
+        name: "variant",
+        type: "enum",
+        enumValues: ["default", "success", "warning", "danger", "info"],
+        default: "default",
+      },
+    ],
+    implementations: {
+      shadcn: "Badge",
+      mui: "Badge",
+      radix: null,
+      html: null,
+    },
+    a11yNotes: ["色だけで意味を伝えない(テキストを併記)"],
+  },
+  {
+    id: "avatar",
+    name: "Avatar",
+    nameJa: "アバター",
+    aliases: ["Profile picture", "User icon"],
+    description: "ユーザーの画像またはイニシャルを表示する。",
+    category: "display",
+    isContainer: false,
+    typicalProps: [
+      { name: "name", type: "string", default: "山田太郎" },
+      {
+        name: "size",
+        type: "enum",
+        enumValues: ["sm", "md", "lg"],
+        default: "md",
+      },
+      { name: "showStatus", type: "boolean", default: false },
+    ],
+    implementations: {
+      shadcn: "Avatar",
+      mui: "Avatar",
+      radix: "Avatar",
+      html: null,
+    },
+    a11yNotes: ["画像には人物名のalt属性を付与する"],
+  },
+];

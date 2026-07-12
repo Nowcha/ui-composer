@@ -14,7 +14,7 @@ import { fileURLToPath } from "node:url";
 import { icons as phosphorIcons } from "@phosphor-icons/core";
 import type { CatalogComponent, IconMeta } from "../src/types/catalog";
 import { CATEGORIES } from "../src/types/catalog";
-import { catalogSeed } from "./catalog-seed";
+import { catalogSeed } from "./catalog-seed/index";
 
 const DATA_DIR = path.join(
   path.dirname(fileURLToPath(import.meta.url)),

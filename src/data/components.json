@@ -56,6 +56,133 @@
     ]
   },
   {
+    "id": "button-group",
+    "name": "Button group",
+    "nameJa": "ボタングループ",
+    "aliases": [
+      "Segmented control",
+      "Split button"
+    ],
+    "description": "関連する複数のボタンをひとまとまりに並べたグループ。",
+    "category": "action",
+    "isContainer": false,
+    "typicalProps": [
+      {
+        "name": "buttons",
+        "type": "string",
+        "default": "日, 週, 月"
+      },
+      {
+        "name": "selectionMode",
+        "type": "enum",
+        "enumValues": [
+          "none",
+          "single",
+          "multiple"
+        ],
+        "default": "single"
+      }
+    ],
+    "implementations": {
+      "shadcn": null,
+      "mui": "ButtonGroup",
+      "radix": "ToggleGroup",
+      "html": null
+    },
+    "a11yNotes": [
+      "グループに role=group と aria-label を付与する",
+      "選択状態は aria-pressed で表現する"
+    ]
+  },
+  {
+    "id": "fab",
+    "name": "Floating action button",
+    "nameJa": "フローティングアクションボタン",
+    "aliases": [
+      "FAB",
+      "Floating button"
+    ],
+    "description": "画面の主要アクションを促す、浮遊表示の円形ボタン。",
+    "category": "action",
+    "isContainer": false,
+    "typicalProps": [
+      {
+        "name": "label",
+        "type": "string",
+        "default": "新規作成"
+      },
+      {
+        "name": "position",
+        "type": "enum",
+        "enumValues": [
+          "bottom-right",
+          "bottom-left",
+          "bottom-center"
+        ],
+        "default": "bottom-right"
+      },
+      {
+        "name": "extended",
+        "type": "boolean",
+        "default": false
+      }
+    ],
+    "implementations": {
+      "shadcn": null,
+      "mui": "Fab",
+      "radix": null,
+      "html": null
+    },
+    "a11yNotes": [
+      "アイコンのみの場合は aria-label を必ず付与する",
+      "コンテンツを覆い隠さない位置に固定する"
+    ]
+  },
+  {
+    "id": "link",
+    "name": "Link",
+    "nameJa": "リンク",
+    "aliases": [
+      "Anchor",
+      "Hyperlink"
+    ],
+    "description": "別ページや別リソースへ遷移するテキストリンク。",
+    "category": "action",
+    "isContainer": false,
+    "typicalProps": [
+      {
+        "name": "label",
+        "type": "string",
+        "default": "詳細を見る"
+      },
+      {
+        "name": "href",
+        "type": "string",
+        "default": "#"
+      },
+      {
+        "name": "external",
+        "type": "boolean",
+        "default": false
+      },
+      {
+        "name": "underline",
+        "type": "boolean",
+        "default": true
+      }
+    ],
+    "implementations": {
+      "shadcn": null,
+      "mui": "Link",
+      "radix": null,
+      "html": "<a>"
+    },
+    "a11yNotes": [
+      "「こちら」等の曖昧なリンクテキストを避ける",
+      "外部リンクは新規タブで開くことを明示する"
+    ]
+  },
+  {
     "id": "text-input",
     "name": "Text input",
     "nameJa": "テキスト入力",
@@ -313,6 +440,441 @@
     ]
   },
   {
+    "id": "combobox",
+    "name": "Combobox",
+    "nameJa": "コンボボックス",
+    "aliases": [
+      "Autocomplete",
+      "Typeahead",
+      "Select with search"
+    ],
+    "description": "テキスト入力で選択肢を絞り込みながら選ぶ入力要素。",
+    "category": "input",
+    "isContainer": false,
+    "typicalProps": [
+      {
+        "name": "label",
+        "type": "string",
+        "default": "担当者"
+      },
+      {
+        "name": "placeholder",
+        "type": "string",
+        "default": "入力して検索…"
+      },
+      {
+        "name": "allowCustomValue",
+        "type": "boolean",
+        "default": false
+      },
+      {
+        "name": "multiple",
+        "type": "boolean",
+        "default": false
+      }
+    ],
+    "implementations": {
+      "shadcn": "Combobox",
+      "mui": "Autocomplete",
+      "radix": null,
+      "html": "<datalist>"
+    },
+    "a11yNotes": [
+      "role=combobox と aria-expanded / aria-activedescendant を実装する",
+      "候補リストは矢印キーで移動できること"
+    ]
+  },
+  {
+    "id": "date-picker",
+    "name": "Date picker",
+    "nameJa": "日付ピッカー",
+    "aliases": [
+      "Calendar picker",
+      "Date input"
+    ],
+    "description": "カレンダーから日付を選択する入力要素。",
+    "category": "input",
+    "isContainer": false,
+    "typicalProps": [
+      {
+        "name": "label",
+        "type": "string",
+        "default": "日付"
+      },
+      {
+        "name": "range",
+        "type": "boolean",
+        "default": false
+      },
+      {
+        "name": "format",
+        "type": "string",
+        "default": "YYYY/MM/DD"
+      }
+    ],
+    "implementations": {
+      "shadcn": "DatePicker",
+      "mui": "DatePicker",
+      "radix": null,
+      "html": "<input type=\"date\">"
+    },
+    "a11yNotes": [
+      "キーボードのみで日付を選択できること",
+      "テキスト直接入力も許容する"
+    ]
+  },
+  {
+    "id": "time-picker",
+    "name": "Time picker",
+    "nameJa": "時刻ピッカー",
+    "aliases": [
+      "Time input",
+      "Clock picker"
+    ],
+    "description": "時刻を選択する入力要素。",
+    "category": "input",
+    "isContainer": false,
+    "typicalProps": [
+      {
+        "name": "label",
+        "type": "string",
+        "default": "時刻"
+      },
+      {
+        "name": "step",
+        "type": "number",
+        "default": 15
+      },
+      {
+        "name": "use24Hour",
+        "type": "boolean",
+        "default": true
+      }
+    ],
+    "implementations": {
+      "shadcn": null,
+      "mui": "TimePicker",
+      "radix": null,
+      "html": "<input type=\"time\">"
+    },
+    "a11yNotes": [
+      "キーボードのみで時刻を入力できること"
+    ]
+  },
+  {
+    "id": "number-input",
+    "name": "Number input",
+    "nameJa": "数値入力",
+    "aliases": [
+      "Spinner",
+      "Stepper input",
+      "Numeric field"
+    ],
+    "description": "増減ボタン付きの数値入力フィールド。",
+    "category": "input",
+    "isContainer": false,
+    "typicalProps": [
+      {
+        "name": "label",
+        "type": "string",
+        "default": "数量"
+      },
+      {
+        "name": "min",
+        "type": "number",
+        "default": 0
+      },
+      {
+        "name": "max",
+        "type": "number",
+        "default": 100
+      },
+      {
+        "name": "step",
+        "type": "number",
+        "default": 1
+      }
+    ],
+    "implementations": {
+      "shadcn": null,
+      "mui": null,
+      "radix": null,
+      "html": "<input type=\"number\">"
+    },
+    "a11yNotes": [
+      "増減ボタンにも aria-label を付与する"
+    ]
+  },
+  {
+    "id": "file-upload",
+    "name": "File upload",
+    "nameJa": "ファイルアップロード",
+    "aliases": [
+      "File input",
+      "Dropzone",
+      "File picker"
+    ],
+    "description": "ファイルを選択またはドラッグ&ドロップで受け取る入力要素。",
+    "category": "input",
+    "isContainer": false,
+    "typicalProps": [
+      {
+        "name": "label",
+        "type": "string",
+        "default": "ファイルを選択"
+      },
+      {
+        "name": "accept",
+        "type": "string",
+        "default": "image/*"
+      },
+      {
+        "name": "multiple",
+        "type": "boolean",
+        "default": false
+      },
+      {
+        "name": "dragDrop",
+        "type": "boolean",
+        "default": true
+      }
+    ],
+    "implementations": {
+      "shadcn": null,
+      "mui": null,
+      "radix": null,
+      "html": "<input type=\"file\">"
+    },
+    "a11yNotes": [
+      "ドロップゾーンだけでなくボタンからも選択できること",
+      "アップロード状況をスクリーンリーダーに通知する(aria-live)"
+    ]
+  },
+  {
+    "id": "search-field",
+    "name": "Search field",
+    "nameJa": "検索フィールド",
+    "aliases": [
+      "Search box",
+      "Search input",
+      "Search bar"
+    ],
+    "description": "検索キーワードを入力する専用フィールド。",
+    "category": "input",
+    "isContainer": false,
+    "typicalProps": [
+      {
+        "name": "placeholder",
+        "type": "string",
+        "default": "検索…"
+      },
+      {
+        "name": "showClearButton",
+        "type": "boolean",
+        "default": true
+      },
+      {
+        "name": "instantSearch",
+        "type": "boolean",
+        "default": false
+      }
+    ],
+    "implementations": {
+      "shadcn": null,
+      "mui": null,
+      "radix": null,
+      "html": "<input type=\"search\">"
+    },
+    "a11yNotes": [
+      "role=search のランドマークで囲む",
+      "クリアボタンに aria-label を付与する"
+    ]
+  },
+  {
+    "id": "slider",
+    "name": "Slider",
+    "nameJa": "スライダー",
+    "aliases": [
+      "Range slider",
+      "Track bar"
+    ],
+    "description": "つまみをドラッグして範囲内の値を選ぶ入力要素。",
+    "category": "input",
+    "isContainer": false,
+    "typicalProps": [
+      {
+        "name": "label",
+        "type": "string",
+        "default": "音量"
+      },
+      {
+        "name": "min",
+        "type": "number",
+        "default": 0
+      },
+      {
+        "name": "max",
+        "type": "number",
+        "default": 100
+      },
+      {
+        "name": "range",
+        "type": "boolean",
+        "default": false
+      },
+      {
+        "name": "showValue",
+        "type": "boolean",
+        "default": true
+      }
+    ],
+    "implementations": {
+      "shadcn": "Slider",
+      "mui": "Slider",
+      "radix": "Slider",
+      "html": "<input type=\"range\">"
+    },
+    "a11yNotes": [
+      "矢印キーで値を変更できること",
+      "現在値を aria-valuenow / aria-valuetext で公開する"
+    ]
+  },
+  {
+    "id": "rating",
+    "name": "Rating",
+    "nameJa": "評価(星)",
+    "aliases": [
+      "Star rating",
+      "Score"
+    ],
+    "description": "星などのアイコンで評価を入力・表示する要素。",
+    "category": "input",
+    "isContainer": false,
+    "typicalProps": [
+      {
+        "name": "max",
+        "type": "number",
+        "default": 5
+      },
+      {
+        "name": "value",
+        "type": "number",
+        "default": 3
+      },
+      {
+        "name": "readOnly",
+        "type": "boolean",
+        "default": false
+      },
+      {
+        "name": "allowHalf",
+        "type": "boolean",
+        "default": false
+      }
+    ],
+    "implementations": {
+      "shadcn": null,
+      "mui": "Rating",
+      "radix": null,
+      "html": null
+    },
+    "a11yNotes": [
+      "radiogroupとして実装しキーボード選択可能にする",
+      "読み取り専用の場合は評価値をテキストでも示す"
+    ]
+  },
+  {
+    "id": "color-picker",
+    "name": "Color picker",
+    "nameJa": "カラーピッカー",
+    "aliases": [
+      "Color input",
+      "Color selector"
+    ],
+    "description": "色を選択する入力要素。",
+    "category": "input",
+    "isContainer": false,
+    "typicalProps": [
+      {
+        "name": "label",
+        "type": "string",
+        "default": "テーマカラー"
+      },
+      {
+        "name": "showPresets",
+        "type": "boolean",
+        "default": true
+      },
+      {
+        "name": "format",
+        "type": "enum",
+        "enumValues": [
+          "hex",
+          "rgb",
+          "hsl"
+        ],
+        "default": "hex"
+      }
+    ],
+    "implementations": {
+      "shadcn": null,
+      "mui": null,
+      "radix": null,
+      "html": "<input type=\"color\">"
+    },
+    "a11yNotes": [
+      "色名やHEX値をテキストでも入力・確認できること"
+    ]
+  },
+  {
+    "id": "form",
+    "name": "Form",
+    "nameJa": "フォーム",
+    "aliases": [
+      "Form container"
+    ],
+    "description": "入力要素をまとめ、送信処理を担うコンテナ。",
+    "category": "input",
+    "isContainer": true,
+    "typicalProps": [
+      {
+        "name": "title",
+        "type": "string",
+        "default": "入力フォーム"
+      },
+      {
+        "name": "submitLabel",
+        "type": "string",
+        "default": "送信"
+      },
+      {
+        "name": "showCancel",
+        "type": "boolean",
+        "default": false
+      },
+      {
+        "name": "layout",
+        "type": "enum",
+        "enumValues": [
+          "vertical",
+          "horizontal",
+          "inline"
+        ],
+        "default": "vertical"
+      }
+    ],
+    "implementations": {
+      "shadcn": "Form",
+      "mui": null,
+      "radix": "Form",
+      "html": "<form>"
+    },
+    "a11yNotes": [
+      "送信エラーは件数と各フィールドの両方で通知する",
+      "必須項目は視覚とaria-requiredの両方で示す"
+    ]
+  },
+  {
     "id": "card",
     "name": "Card",
     "nameJa": "カード",
@@ -398,9 +960,8 @@
     "name": "Badge",
     "nameJa": "バッジ",
     "aliases": [
-      "Chip",
       "Pill",
-      "Label"
+      "Status badge"
     ],
     "description": "ステータスや件数を示す小さなラベル。",
     "category": "display",
@@ -426,7 +987,7 @@
     ],
     "implementations": {
       "shadcn": "Badge",
-      "mui": "Chip",
+      "mui": "Badge",
       "radix": null,
       "html": null
     },
@@ -475,6 +1036,436 @@
     },
     "a11yNotes": [
       "画像には人物名のalt属性を付与する"
+    ]
+  },
+  {
+    "id": "image",
+    "name": "Image",
+    "nameJa": "画像",
+    "aliases": [
+      "Picture",
+      "Figure"
+    ],
+    "description": "画像を表示する要素。ワイヤーフレームではプレースホルダ矩形。",
+    "category": "display",
+    "isContainer": false,
+    "typicalProps": [
+      {
+        "name": "alt",
+        "type": "string",
+        "default": "画像の説明"
+      },
+      {
+        "name": "aspectRatio",
+        "type": "enum",
+        "enumValues": [
+          "16:9",
+          "4:3",
+          "1:1",
+          "auto"
+        ],
+        "default": "16:9"
+      },
+      {
+        "name": "fit",
+        "type": "enum",
+        "enumValues": [
+          "cover",
+          "contain",
+          "fill"
+        ],
+        "default": "cover"
+      },
+      {
+        "name": "caption",
+        "type": "string"
+      }
+    ],
+    "implementations": {
+      "shadcn": null,
+      "mui": null,
+      "radix": null,
+      "html": "<img>"
+    },
+    "a11yNotes": [
+      "意味のある画像には内容を説明するaltを付与する",
+      "装飾画像は alt=\"\" とする"
+    ]
+  },
+  {
+    "id": "list",
+    "name": "List",
+    "nameJa": "リスト",
+    "aliases": [
+      "Item list",
+      "List view"
+    ],
+    "description": "項目を縦に並べて表示する。アイコン・アクション付きも可。",
+    "category": "display",
+    "isContainer": false,
+    "typicalProps": [
+      {
+        "name": "items",
+        "type": "string",
+        "default": "項目1, 項目2, 項目3"
+      },
+      {
+        "name": "showDividers",
+        "type": "boolean",
+        "default": true
+      },
+      {
+        "name": "twoLine",
+        "type": "boolean",
+        "default": false
+      },
+      {
+        "name": "showAction",
+        "type": "boolean",
+        "default": false
+      }
+    ],
+    "implementations": {
+      "shadcn": null,
+      "mui": "List",
+      "radix": null,
+      "html": "<ul>"
+    },
+    "a11yNotes": [
+      "ul/li のセマンティクスを維持する"
+    ]
+  },
+  {
+    "id": "quote",
+    "name": "Quote",
+    "nameJa": "引用",
+    "aliases": [
+      "Blockquote",
+      "Pull quote",
+      "Testimonial"
+    ],
+    "description": "他者の発言や文献からの引用を目立たせて表示する。",
+    "category": "display",
+    "isContainer": false,
+    "typicalProps": [
+      {
+        "name": "text",
+        "type": "string",
+        "default": "引用文がここに入ります。"
+      },
+      {
+        "name": "author",
+        "type": "string",
+        "default": "発言者名"
+      },
+      {
+        "name": "source",
+        "type": "string"
+      }
+    ],
+    "implementations": {
+      "shadcn": null,
+      "mui": null,
+      "radix": null,
+      "html": "<blockquote>"
+    },
+    "a11yNotes": [
+      "blockquote要素を使い、出典は cite で示す"
+    ]
+  },
+  {
+    "id": "icon",
+    "name": "Icon",
+    "nameJa": "アイコン",
+    "aliases": [
+      "Symbol",
+      "Glyph"
+    ],
+    "description": "Phosphor Iconsから選択して表示する単体アイコン。",
+    "category": "display",
+    "isContainer": false,
+    "typicalProps": [
+      {
+        "name": "size",
+        "type": "enum",
+        "enumValues": [
+          "16",
+          "20",
+          "24",
+          "32",
+          "48"
+        ],
+        "default": "24"
+      },
+      {
+        "name": "decorative",
+        "type": "boolean",
+        "default": true
+      }
+    ],
+    "implementations": {
+      "shadcn": null,
+      "mui": "Icon",
+      "radix": null,
+      "html": "<svg>"
+    },
+    "a11yNotes": [
+      "装飾目的は aria-hidden=true、意味を持つ場合は aria-label を付与する"
+    ]
+  },
+  {
+    "id": "tag",
+    "name": "Tag",
+    "nameJa": "タグ",
+    "aliases": [
+      "Chip",
+      "Token"
+    ],
+    "description": "分類や属性を示す小さなラベル。削除・選択可能なものも含む。",
+    "category": "display",
+    "isContainer": false,
+    "typicalProps": [
+      {
+        "name": "label",
+        "type": "string",
+        "default": "デザイン"
+      },
+      {
+        "name": "removable",
+        "type": "boolean",
+        "default": false
+      },
+      {
+        "name": "clickable",
+        "type": "boolean",
+        "default": false
+      }
+    ],
+    "implementations": {
+      "shadcn": null,
+      "mui": "Chip",
+      "radix": null,
+      "html": null
+    },
+    "a11yNotes": [
+      "削除ボタンには「〜を削除」の aria-label を付与する"
+    ]
+  },
+  {
+    "id": "tree-view",
+    "name": "Tree view",
+    "nameJa": "ツリービュー",
+    "aliases": [
+      "Tree",
+      "Hierarchy view"
+    ],
+    "description": "フォルダ構造のような階層データを開閉可能に表示する。",
+    "category": "display",
+    "isContainer": false,
+    "typicalProps": [
+      {
+        "name": "showIcons",
+        "type": "boolean",
+        "default": true
+      },
+      {
+        "name": "showLines",
+        "type": "boolean",
+        "default": false
+      },
+      {
+        "name": "multiSelect",
+        "type": "boolean",
+        "default": false
+      }
+    ],
+    "implementations": {
+      "shadcn": null,
+      "mui": "TreeView",
+      "radix": null,
+      "html": null
+    },
+    "a11yNotes": [
+      "role=tree/treeitem と aria-expanded を実装する",
+      "矢印キーで展開・移動できること"
+    ]
+  },
+  {
+    "id": "empty-state",
+    "name": "Empty state",
+    "nameJa": "空状態",
+    "aliases": [
+      "Blank state",
+      "Zero state",
+      "No data"
+    ],
+    "description": "データが存在しないときに表示する案内領域。",
+    "category": "display",
+    "isContainer": false,
+    "typicalProps": [
+      {
+        "name": "title",
+        "type": "string",
+        "default": "データがありません"
+      },
+      {
+        "name": "description",
+        "type": "string",
+        "default": "最初の項目を作成しましょう"
+      },
+      {
+        "name": "actionLabel",
+        "type": "string",
+        "default": "新規作成"
+      },
+      {
+        "name": "showIllustration",
+        "type": "boolean",
+        "default": true
+      }
+    ],
+    "implementations": {
+      "shadcn": null,
+      "mui": null,
+      "radix": null,
+      "html": null
+    },
+    "a11yNotes": [
+      "次に取るべきアクションを明確に提示する"
+    ]
+  },
+  {
+    "id": "stat-card",
+    "name": "Stat card",
+    "nameJa": "統計カード(KPI)",
+    "aliases": [
+      "KPI card",
+      "Metric card",
+      "Summary card"
+    ],
+    "description": "数値指標と増減を強調表示するカード。ダッシュボード向け。",
+    "category": "display",
+    "isContainer": false,
+    "typicalProps": [
+      {
+        "name": "label",
+        "type": "string",
+        "default": "月間売上"
+      },
+      {
+        "name": "value",
+        "type": "string",
+        "default": "¥1,234,000"
+      },
+      {
+        "name": "change",
+        "type": "string",
+        "default": "+12.3%"
+      },
+      {
+        "name": "trend",
+        "type": "enum",
+        "enumValues": [
+          "up",
+          "down",
+          "flat"
+        ],
+        "default": "up"
+      }
+    ],
+    "implementations": {
+      "shadcn": null,
+      "mui": null,
+      "radix": null,
+      "html": null
+    },
+    "a11yNotes": [
+      "増減は色だけでなく記号・テキストでも示す"
+    ]
+  },
+  {
+    "id": "description-list",
+    "name": "Description list",
+    "nameJa": "説明リスト",
+    "aliases": [
+      "Definition list",
+      "Key-value list",
+      "Detail list"
+    ],
+    "description": "項目名と値のペアを並べて表示する。詳細画面向け。",
+    "category": "display",
+    "isContainer": false,
+    "typicalProps": [
+      {
+        "name": "items",
+        "type": "string",
+        "default": "氏名: 山田太郎, 部署: 開発部, 役職: リーダー"
+      },
+      {
+        "name": "layout",
+        "type": "enum",
+        "enumValues": [
+          "vertical",
+          "horizontal"
+        ],
+        "default": "horizontal"
+      },
+      {
+        "name": "showDividers",
+        "type": "boolean",
+        "default": true
+      }
+    ],
+    "implementations": {
+      "shadcn": null,
+      "mui": null,
+      "radix": null,
+      "html": "<dl>"
+    },
+    "a11yNotes": [
+      "dl/dt/dd のセマンティクスを使う"
+    ]
+  },
+  {
+    "id": "timeline",
+    "name": "Timeline",
+    "nameJa": "タイムライン",
+    "aliases": [
+      "Activity feed",
+      "History"
+    ],
+    "description": "出来事を時系列に沿って縦に並べて表示する。",
+    "category": "display",
+    "isContainer": false,
+    "typicalProps": [
+      {
+        "name": "items",
+        "type": "string",
+        "default": "受付, 審査中, 承認, 完了"
+      },
+      {
+        "name": "showTimestamps",
+        "type": "boolean",
+        "default": true
+      },
+      {
+        "name": "orientation",
+        "type": "enum",
+        "enumValues": [
+          "vertical",
+          "horizontal"
+        ],
+        "default": "vertical"
+      }
+    ],
+    "implementations": {
+      "shadcn": null,
+      "mui": "Timeline",
+      "radix": null,
+      "html": "<ol>"
+    },
+    "a11yNotes": [
+      "時系列は ol 要素で順序を保証する"
     ]
   },
   {
@@ -528,42 +1519,182 @@
     ]
   },
   {
-    "id": "tabs",
-    "name": "Tabs",
-    "nameJa": "タブ",
+    "id": "toast",
+    "name": "Toast",
+    "nameJa": "トースト",
     "aliases": [
-      "Tab bar",
-      "Tab navigation"
+      "Snackbar",
+      "Toast notification"
     ],
-    "description": "同一領域内でコンテンツを切り替えるナビゲーション。",
-    "category": "navigation",
-    "isContainer": true,
+    "description": "画面隅に一時的に表示され自動で消える通知。",
+    "category": "feedback",
+    "isContainer": false,
     "typicalProps": [
       {
-        "name": "tabs",
+        "name": "message",
         "type": "string",
-        "default": "概要, 詳細, 設定"
+        "default": "保存しました"
       },
+      {
+        "name": "severity",
+        "type": "enum",
+        "enumValues": [
+          "info",
+          "success",
+          "warning",
+          "error"
+        ],
+        "default": "success"
+      },
+      {
+        "name": "duration",
+        "type": "number",
+        "default": 3000
+      },
+      {
+        "name": "showAction",
+        "type": "boolean",
+        "default": false
+      }
+    ],
+    "implementations": {
+      "shadcn": "Sonner",
+      "mui": "Snackbar",
+      "radix": "Toast",
+      "html": null
+    },
+    "a11yNotes": [
+      "aria-live=polite で通知する",
+      "操作を伴う場合は自動で消さない、または十分な猶予を設ける"
+    ]
+  },
+  {
+    "id": "progress-bar",
+    "name": "Progress bar",
+    "nameJa": "プログレスバー",
+    "aliases": [
+      "Progress indicator",
+      "Loading bar"
+    ],
+    "description": "処理の進捗率を横棒で表示する。",
+    "category": "feedback",
+    "isContainer": false,
+    "typicalProps": [
+      {
+        "name": "value",
+        "type": "number",
+        "default": 60
+      },
+      {
+        "name": "showLabel",
+        "type": "boolean",
+        "default": true
+      },
+      {
+        "name": "indeterminate",
+        "type": "boolean",
+        "default": false
+      }
+    ],
+    "implementations": {
+      "shadcn": "Progress",
+      "mui": "LinearProgress",
+      "radix": "Progress",
+      "html": "<progress>"
+    },
+    "a11yNotes": [
+      "role=progressbar と aria-valuenow を付与する",
+      "進捗率はテキストでも表示する"
+    ]
+  },
+  {
+    "id": "skeleton",
+    "name": "Skeleton",
+    "nameJa": "スケルトン",
+    "aliases": [
+      "Skeleton loader",
+      "Placeholder",
+      "Shimmer"
+    ],
+    "description": "コンテンツ読込中に表示する形状プレースホルダ。",
+    "category": "feedback",
+    "isContainer": false,
+    "typicalProps": [
       {
         "name": "variant",
         "type": "enum",
         "enumValues": [
-          "underline",
-          "pill",
-          "enclosed"
+          "text",
+          "circle",
+          "rect",
+          "card"
         ],
-        "default": "underline"
+        "default": "text"
+      },
+      {
+        "name": "lines",
+        "type": "number",
+        "default": 3
+      },
+      {
+        "name": "animated",
+        "type": "boolean",
+        "default": true
       }
     ],
     "implementations": {
-      "shadcn": "Tabs",
-      "mui": "Tabs",
-      "radix": "Tabs",
+      "shadcn": "Skeleton",
+      "mui": "Skeleton",
+      "radix": null,
       "html": null
     },
     "a11yNotes": [
-      "role=tablist/tab/tabpanel を正しく構成する",
-      "矢印キーでタブ間を移動できること"
+      "aria-busy=true を読込領域に付与する",
+      "スクリーンリーダー向けに読込中である旨を通知する"
+    ]
+  },
+  {
+    "id": "loading-indicator",
+    "name": "Loading indicator",
+    "nameJa": "ローディングインジケータ",
+    "aliases": [
+      "Spinner",
+      "Loader"
+    ],
+    "description": "処理中であることを示す回転アニメーション。",
+    "category": "feedback",
+    "isContainer": false,
+    "typicalProps": [
+      {
+        "name": "size",
+        "type": "enum",
+        "enumValues": [
+          "sm",
+          "md",
+          "lg"
+        ],
+        "default": "md"
+      },
+      {
+        "name": "label",
+        "type": "string",
+        "default": "読み込み中…"
+      },
+      {
+        "name": "overlay",
+        "type": "boolean",
+        "default": false
+      }
+    ],
+    "implementations": {
+      "shadcn": null,
+      "mui": "CircularProgress",
+      "radix": null,
+      "html": null
+    },
+    "a11yNotes": [
+      "role=status とテキストラベルを併用する",
+      "アニメーションは prefers-reduced-motion を尊重する"
     ]
   },
   {
@@ -648,6 +1779,130 @@
     ]
   },
   {
+    "id": "tooltip",
+    "name": "Tooltip",
+    "nameJa": "ツールチップ",
+    "aliases": [
+      "Hint",
+      "Infotip"
+    ],
+    "description": "ホバー/フォーカス時に補足情報を表示する小さな吹き出し。",
+    "category": "disclosure",
+    "isContainer": false,
+    "typicalProps": [
+      {
+        "name": "content",
+        "type": "string",
+        "default": "補足説明"
+      },
+      {
+        "name": "placement",
+        "type": "enum",
+        "enumValues": [
+          "top",
+          "bottom",
+          "left",
+          "right"
+        ],
+        "default": "top"
+      }
+    ],
+    "implementations": {
+      "shadcn": "Tooltip",
+      "mui": "Tooltip",
+      "radix": "Tooltip",
+      "html": null
+    },
+    "a11yNotes": [
+      "ホバーだけでなくフォーカスでも表示する",
+      "重要な情報はツールチップだけに置かない"
+    ]
+  },
+  {
+    "id": "popover",
+    "name": "Popover",
+    "nameJa": "ポップオーバー",
+    "aliases": [
+      "Popup panel",
+      "Flyout"
+    ],
+    "description": "クリックで開く、操作可能なコンテンツを持つ小型パネル。",
+    "category": "disclosure",
+    "isContainer": true,
+    "typicalProps": [
+      {
+        "name": "triggerLabel",
+        "type": "string",
+        "default": "詳細"
+      },
+      {
+        "name": "placement",
+        "type": "enum",
+        "enumValues": [
+          "top",
+          "bottom",
+          "left",
+          "right"
+        ],
+        "default": "bottom"
+      },
+      {
+        "name": "showArrow",
+        "type": "boolean",
+        "default": true
+      }
+    ],
+    "implementations": {
+      "shadcn": "Popover",
+      "mui": "Popover",
+      "radix": "Popover",
+      "html": null
+    },
+    "a11yNotes": [
+      "トリガーに aria-expanded / aria-haspopup を付与する",
+      "Escキーとフォーカス外れで閉じられること"
+    ]
+  },
+  {
+    "id": "tabs",
+    "name": "Tabs",
+    "nameJa": "タブ",
+    "aliases": [
+      "Tab bar",
+      "Tab navigation"
+    ],
+    "description": "同一領域内でコンテンツを切り替えるナビゲーション。",
+    "category": "navigation",
+    "isContainer": true,
+    "typicalProps": [
+      {
+        "name": "tabs",
+        "type": "string",
+        "default": "概要, 詳細, 設定"
+      },
+      {
+        "name": "variant",
+        "type": "enum",
+        "enumValues": [
+          "underline",
+          "pill",
+          "enclosed"
+        ],
+        "default": "underline"
+      }
+    ],
+    "implementations": {
+      "shadcn": "Tabs",
+      "mui": "Tabs",
+      "radix": "Tabs",
+      "html": null
+    },
+    "a11yNotes": [
+      "role=tablist/tab/tabpanel を正しく構成する",
+      "矢印キーでタブ間を移動できること"
+    ]
+  },
+  {
     "id": "breadcrumb",
     "name": "Breadcrumb",
     "nameJa": "パンくずリスト",
@@ -710,43 +1965,257 @@
     ]
   },
   {
-    "id": "tooltip",
-    "name": "Tooltip",
-    "nameJa": "ツールチップ",
+    "id": "menu",
+    "name": "Menu",
+    "nameJa": "メニュー",
     "aliases": [
-      "Hint",
-      "Infotip"
+      "Context menu",
+      "Action menu"
     ],
-    "description": "ホバー/フォーカス時に補足情報を表示する小さな吹き出し。",
-    "category": "disclosure",
+    "description": "アクション項目の一覧を表示するメニュー。",
+    "category": "navigation",
     "isContainer": false,
     "typicalProps": [
       {
-        "name": "content",
+        "name": "items",
         "type": "string",
-        "default": "補足説明"
+        "default": "編集, 複製, 削除"
       },
       {
-        "name": "placement",
-        "type": "enum",
-        "enumValues": [
-          "top",
-          "bottom",
-          "left",
-          "right"
-        ],
-        "default": "top"
+        "name": "showIcons",
+        "type": "boolean",
+        "default": true
+      },
+      {
+        "name": "showShortcuts",
+        "type": "boolean",
+        "default": false
       }
     ],
     "implementations": {
-      "shadcn": "Tooltip",
-      "mui": "Tooltip",
-      "radix": "Tooltip",
+      "shadcn": "ContextMenu",
+      "mui": "Menu",
+      "radix": "ContextMenu",
       "html": null
     },
     "a11yNotes": [
-      "ホバーだけでなくフォーカスでも表示する",
-      "重要な情報はツールチップだけに置かない"
+      "role=menu/menuitem を正しく構成する",
+      "矢印キーで項目間を移動できること"
+    ]
+  },
+  {
+    "id": "dropdown-menu",
+    "name": "Dropdown menu",
+    "nameJa": "ドロップダウンメニュー",
+    "aliases": [
+      "Dropdown",
+      "Pull-down menu"
+    ],
+    "description": "トリガーボタンから開くアクションメニュー。",
+    "category": "navigation",
+    "isContainer": false,
+    "typicalProps": [
+      {
+        "name": "triggerLabel",
+        "type": "string",
+        "default": "操作"
+      },
+      {
+        "name": "items",
+        "type": "string",
+        "default": "編集, 共有, 削除"
+      },
+      {
+        "name": "showDividers",
+        "type": "boolean",
+        "default": false
+      }
+    ],
+    "implementations": {
+      "shadcn": "DropdownMenu",
+      "mui": "Menu",
+      "radix": "DropdownMenu",
+      "html": null
+    },
+    "a11yNotes": [
+      "トリガーに aria-haspopup=menu と aria-expanded を付与する",
+      "Escキーで閉じてトリガーにフォーカスを戻す"
+    ]
+  },
+  {
+    "id": "navigation",
+    "name": "Navigation",
+    "nameJa": "ナビゲーション",
+    "aliases": [
+      "Nav bar",
+      "Navigation menu",
+      "Global navigation"
+    ],
+    "description": "サイト/アプリの主要セクションへ移動するリンク群。",
+    "category": "navigation",
+    "isContainer": false,
+    "typicalProps": [
+      {
+        "name": "items",
+        "type": "string",
+        "default": "ホーム, プロジェクト, 設定"
+      },
+      {
+        "name": "orientation",
+        "type": "enum",
+        "enumValues": [
+          "horizontal",
+          "vertical"
+        ],
+        "default": "horizontal"
+      },
+      {
+        "name": "showIcons",
+        "type": "boolean",
+        "default": false
+      }
+    ],
+    "implementations": {
+      "shadcn": "NavigationMenu",
+      "mui": null,
+      "radix": "NavigationMenu",
+      "html": "<nav>"
+    },
+    "a11yNotes": [
+      "nav要素に aria-label を付与する",
+      "現在地には aria-current=page を付与する"
+    ]
+  },
+  {
+    "id": "sidebar",
+    "name": "Sidebar",
+    "nameJa": "サイドバー",
+    "aliases": [
+      "Side navigation",
+      "Side panel"
+    ],
+    "description": "画面側部に固定表示するナビゲーション領域。",
+    "category": "navigation",
+    "isContainer": true,
+    "typicalProps": [
+      {
+        "name": "position",
+        "type": "enum",
+        "enumValues": [
+          "left",
+          "right"
+        ],
+        "default": "left"
+      },
+      {
+        "name": "collapsible",
+        "type": "boolean",
+        "default": true
+      },
+      {
+        "name": "showHeader",
+        "type": "boolean",
+        "default": true
+      }
+    ],
+    "implementations": {
+      "shadcn": "Sidebar",
+      "mui": "Drawer",
+      "radix": null,
+      "html": "<aside>"
+    },
+    "a11yNotes": [
+      "aside要素または role=navigation で示す",
+      "折りたたみ状態でも全項目にキーボードで到達できること"
+    ]
+  },
+  {
+    "id": "drawer",
+    "name": "Drawer",
+    "nameJa": "ドロワー",
+    "aliases": [
+      "Slide-out panel",
+      "Off-canvas"
+    ],
+    "description": "画面端からスライドして現れる一時的なパネル。",
+    "category": "navigation",
+    "isContainer": true,
+    "typicalProps": [
+      {
+        "name": "title",
+        "type": "string",
+        "default": "メニュー"
+      },
+      {
+        "name": "position",
+        "type": "enum",
+        "enumValues": [
+          "left",
+          "right",
+          "top",
+          "bottom"
+        ],
+        "default": "right"
+      },
+      {
+        "name": "showOverlay",
+        "type": "boolean",
+        "default": true
+      }
+    ],
+    "implementations": {
+      "shadcn": "Sheet",
+      "mui": "Drawer",
+      "radix": null,
+      "html": null
+    },
+    "a11yNotes": [
+      "モーダル扱いの場合はフォーカストラップを実装する",
+      "Escキーで閉じられること"
+    ]
+  },
+  {
+    "id": "stepper",
+    "name": "Stepper",
+    "nameJa": "ステッパー",
+    "aliases": [
+      "Steps",
+      "Wizard steps",
+      "Progress steps"
+    ],
+    "description": "複数ステップの手続きにおける現在位置を示すナビゲーション。",
+    "category": "navigation",
+    "isContainer": false,
+    "typicalProps": [
+      {
+        "name": "steps",
+        "type": "string",
+        "default": "入力, 確認, 完了"
+      },
+      {
+        "name": "currentStep",
+        "type": "number",
+        "default": 1
+      },
+      {
+        "name": "orientation",
+        "type": "enum",
+        "enumValues": [
+          "horizontal",
+          "vertical"
+        ],
+        "default": "horizontal"
+      }
+    ],
+    "implementations": {
+      "shadcn": null,
+      "mui": "Stepper",
+      "radix": null,
+      "html": "<ol>"
+    },
+    "a11yNotes": [
+      "ol要素で順序を表現する",
+      "現在ステップには aria-current=step を付与する"
     ]
   },
   {
@@ -822,6 +2291,277 @@
     },
     "a11yNotes": [
       "ランドマークとして header 要素を使う"
+    ]
+  },
+  {
+    "id": "footer",
+    "name": "Footer",
+    "nameJa": "フッター",
+    "aliases": [
+      "Page footer",
+      "Site footer"
+    ],
+    "description": "ページ下部に配置する補足情報・リンク領域。",
+    "category": "layout",
+    "isContainer": true,
+    "typicalProps": [
+      {
+        "name": "copyright",
+        "type": "string",
+        "default": "© 2026 Example Inc."
+      },
+      {
+        "name": "showLinks",
+        "type": "boolean",
+        "default": true
+      },
+      {
+        "name": "columns",
+        "type": "enum",
+        "enumValues": [
+          "1",
+          "2",
+          "3",
+          "4"
+        ],
+        "default": "3"
+      }
+    ],
+    "implementations": {
+      "shadcn": null,
+      "mui": null,
+      "radix": null,
+      "html": "<footer>"
+    },
+    "a11yNotes": [
+      "ランドマークとして footer 要素を使う"
+    ]
+  },
+  {
+    "id": "toolbar",
+    "name": "Toolbar",
+    "nameJa": "ツールバー",
+    "aliases": [
+      "Action bar",
+      "Command bar"
+    ],
+    "description": "操作ボタンを横並びにまとめたバー。",
+    "category": "layout",
+    "isContainer": true,
+    "typicalProps": [
+      {
+        "name": "showSeparators",
+        "type": "boolean",
+        "default": true
+      },
+      {
+        "name": "align",
+        "type": "enum",
+        "enumValues": [
+          "left",
+          "center",
+          "right",
+          "space-between"
+        ],
+        "default": "left"
+      }
+    ],
+    "implementations": {
+      "shadcn": null,
+      "mui": "Toolbar",
+      "radix": "Toolbar",
+      "html": null
+    },
+    "a11yNotes": [
+      "role=toolbar と aria-label を付与する",
+      "矢印キーでボタン間を移動できること"
+    ]
+  },
+  {
+    "id": "grid",
+    "name": "Grid",
+    "nameJa": "グリッド",
+    "aliases": [
+      "Grid layout",
+      "Column layout"
+    ],
+    "description": "子要素を等幅カラムに並べるレイアウトコンテナ。",
+    "category": "layout",
+    "isContainer": true,
+    "typicalProps": [
+      {
+        "name": "columns",
+        "type": "enum",
+        "enumValues": [
+          "2",
+          "3",
+          "4",
+          "6",
+          "12"
+        ],
+        "default": "3"
+      },
+      {
+        "name": "gap",
+        "type": "enum",
+        "enumValues": [
+          "sm",
+          "md",
+          "lg"
+        ],
+        "default": "md"
+      },
+      {
+        "name": "responsive",
+        "type": "boolean",
+        "default": true
+      }
+    ],
+    "implementations": {
+      "shadcn": null,
+      "mui": "Grid",
+      "radix": null,
+      "html": null
+    },
+    "a11yNotes": [
+      "視覚順とDOM順を一致させる(order入替を乱用しない)"
+    ]
+  },
+  {
+    "id": "section",
+    "name": "Section",
+    "nameJa": "セクション",
+    "aliases": [
+      "Content section",
+      "Container"
+    ],
+    "description": "見出し付きのコンテンツ区画。ページの論理構造を作る。",
+    "category": "layout",
+    "isContainer": true,
+    "typicalProps": [
+      {
+        "name": "title",
+        "type": "string",
+        "default": "セクション見出し"
+      },
+      {
+        "name": "headingLevel",
+        "type": "enum",
+        "enumValues": [
+          "h2",
+          "h3",
+          "h4"
+        ],
+        "default": "h2"
+      },
+      {
+        "name": "description",
+        "type": "string"
+      }
+    ],
+    "implementations": {
+      "shadcn": null,
+      "mui": null,
+      "radix": null,
+      "html": "<section>"
+    },
+    "a11yNotes": [
+      "見出しレベルを飛ばさない(h2の次はh3)",
+      "section要素には見出しを必ず含める"
+    ]
+  },
+  {
+    "id": "carousel",
+    "name": "Carousel",
+    "nameJa": "カルーセル",
+    "aliases": [
+      "Slider",
+      "Image slider",
+      "Slideshow"
+    ],
+    "description": "複数のコンテンツを横スライドで切り替えて表示する。",
+    "category": "media",
+    "isContainer": true,
+    "typicalProps": [
+      {
+        "name": "slideCount",
+        "type": "number",
+        "default": 3
+      },
+      {
+        "name": "autoplay",
+        "type": "boolean",
+        "default": false
+      },
+      {
+        "name": "showIndicators",
+        "type": "boolean",
+        "default": true
+      },
+      {
+        "name": "showArrows",
+        "type": "boolean",
+        "default": true
+      }
+    ],
+    "implementations": {
+      "shadcn": "Carousel",
+      "mui": null,
+      "radix": null,
+      "html": null
+    },
+    "a11yNotes": [
+      "自動再生には一時停止ボタンを必ず設ける",
+      "スライドは矢印キー・スワイプの両方で操作できること"
+    ]
+  },
+  {
+    "id": "video-player",
+    "name": "Video player",
+    "nameJa": "動画プレイヤー",
+    "aliases": [
+      "Media player",
+      "Video"
+    ],
+    "description": "動画を再生するプレイヤー。ワイヤーフレームではプレースホルダ。",
+    "category": "media",
+    "isContainer": false,
+    "typicalProps": [
+      {
+        "name": "showControls",
+        "type": "boolean",
+        "default": true
+      },
+      {
+        "name": "autoplay",
+        "type": "boolean",
+        "default": false
+      },
+      {
+        "name": "aspectRatio",
+        "type": "enum",
+        "enumValues": [
+          "16:9",
+          "4:3",
+          "1:1",
+          "9:16"
+        ],
+        "default": "16:9"
+      },
+      {
+        "name": "caption",
+        "type": "string"
+      }
+    ],
+    "implementations": {
+      "shadcn": null,
+      "mui": null,
+      "radix": null,
+      "html": "<video>"
+    },
+    "a11yNotes": [
+      "字幕(キャプション)に対応する",
+      "自動再生は音声なしに限定する"
     ]
   }
 ]

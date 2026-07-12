@@ -1,0 +1,145 @@
+import type { CatalogComponent } from "../../src/types/catalog";
+
+export const feedbackComponents: CatalogComponent[] = [
+  {
+    id: "alert",
+    name: "Alert",
+    nameJa: "アラート",
+    aliases: ["Banner", "Callout", "Notification"],
+    description: "ページ内に埋め込む注意喚起メッセージ。",
+    category: "feedback",
+    isContainer: false,
+    typicalProps: [
+      { name: "title", type: "string", default: "お知らせ" },
+      { name: "message", type: "string", default: "メッセージ本文" },
+      {
+        name: "severity",
+        type: "enum",
+        enumValues: ["info", "success", "warning", "error"],
+        default: "info",
+      },
+      { name: "dismissible", type: "boolean", default: false },
+    ],
+    implementations: {
+      shadcn: "Alert",
+      mui: "Alert",
+      radix: null,
+      html: null,
+    },
+    a11yNotes: [
+      "緊急性の高いものは role=alert、低いものは role=status を使う",
+    ],
+  },
+  {
+    id: "toast",
+    name: "Toast",
+    nameJa: "トースト",
+    aliases: ["Snackbar", "Toast notification"],
+    description: "画面隅に一時的に表示され自動で消える通知。",
+    category: "feedback",
+    isContainer: false,
+    typicalProps: [
+      { name: "message", type: "string", default: "保存しました" },
+      {
+        name: "severity",
+        type: "enum",
+        enumValues: ["info", "success", "warning", "error"],
+        default: "success",
+      },
+      { name: "duration", type: "number", default: 3000 },
+      { name: "showAction", type: "boolean", default: false },
+    ],
+    implementations: {
+      shadcn: "Sonner",
+      mui: "Snackbar",
+      radix: "Toast",
+      html: null,
+    },
+    a11yNotes: [
+      "aria-live=polite で通知する",
+      "操作を伴う場合は自動で消さない、または十分な猶予を設ける",
+    ],
+  },
+  {
+    id: "progress-bar",
+    name: "Progress bar",
+    nameJa: "プログレスバー",
+    aliases: ["Progress indicator", "Loading bar"],
+    description: "処理の進捗率を横棒で表示する。",
+    category: "feedback",
+    isContainer: false,
+    typicalProps: [
+      { name: "value", type: "number", default: 60 },
+      { name: "showLabel", type: "boolean", default: true },
+      { name: "indeterminate", type: "boolean", default: false },
+    ],
+    implementations: {
+      shadcn: "Progress",
+      mui: "LinearProgress",
+      radix: "Progress",
+      html: "<progress>",
+    },
+    a11yNotes: [
+      "role=progressbar と aria-valuenow を付与する",
+      "進捗率はテキストでも表示する",
+    ],
+  },
+  {
+    id: "skeleton",
+    name: "Skeleton",
+    nameJa: "スケルトン",
+    aliases: ["Skeleton loader", "Placeholder", "Shimmer"],
+    description: "コンテンツ読込中に表示する形状プレースホルダ。",
+    category: "feedback",
+    isContainer: false,
+    typicalProps: [
+      {
+        name: "variant",
+        type: "enum",
+        enumValues: ["text", "circle", "rect", "card"],
+        default: "text",
+      },
+      { name: "lines", type: "number", default: 3 },
+      { name: "animated", type: "boolean", default: true },
+    ],
+    implementations: {
+      shadcn: "Skeleton",
+      mui: "Skeleton",
+      radix: null,
+      html: null,
+    },
+    a11yNotes: [
+      "aria-busy=true を読込領域に付与する",
+      "スクリーンリーダー向けに読込中である旨を通知する",
+    ],
+  },
+  {
+    id: "loading-indicator",
+    name: "Loading indicator",
+    nameJa: "ローディングインジケータ",
+    aliases: ["Spinner", "Loader"],
+    description: "処理中であることを示す回転アニメーション。",
+    category: "feedback",
+    isContainer: false,
+    typicalProps: [
+      {
+        name: "size",
+        type: "enum",
+        enumValues: ["sm", "md", "lg"],
+        default: "md",
+      },
+      { name: "label", type: "string", default: "読み込み中…" },
+      { name: "overlay", type: "boolean", default: false },
+    ],
+    implementations: {
+      shadcn: null,
+      mui: "CircularProgress",
+      radix: null,
+      html: null,
+    },
+    a11yNotes: [
+      "role=status とテキストラベルを併用する",
+      "アニメーションは prefers-reduced-motion を尊重する",
+    ],
+  },
+];
