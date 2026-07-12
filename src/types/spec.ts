@@ -50,6 +50,11 @@ export interface SpecMeta {
   targetLibrary: string;
   /** Schema version for migration on import. */
   version: number;
+  /**
+   * Enabled prompt rule ids (src/data/prompt-rules.json).
+   * Absent = mode defaults (rules with defaultOn).
+   */
+  promptRules?: string[];
 }
 
 /** Reference to a saved snapshot (payload lives in localStorage, compressed). */

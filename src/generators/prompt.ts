@@ -8,6 +8,10 @@ import type { ComponentNode, SpecDocument } from "../types/spec";
 import { RAW_BLOCK_TYPE, ROOT_NODE_TYPE } from "../types/spec";
 import type { CatalogComponent } from "../types/catalog";
 import { getCatalogComponent } from "../catalog/catalog-data";
+import {
+  renderDummyDataSection,
+  renderRulesSection,
+} from "./prompt-assets";
 
 const INDENT = "  ";
 
@@ -101,6 +105,9 @@ export function generatePrompt(doc: SpecDocument): string {
     ].join("\n"),
   );
 
+  const rulesSection = renderRulesSection(doc);
+  if (rulesSection) sections.push(rulesSection);
+
   const treeLines = renderTree(doc.tree, 0);
   sections.push(
     `## レイアウト構造\n\n${
@@ -129,6 +136,9 @@ export function generatePrompt(doc: SpecDocument): string {
       `## 実装時のアクセシビリティ要件\n\n${a11yLines.join("\n")}`,
     );
   }
+
+  const dummySection = renderDummyDataSection(doc);
+  if (dummySection) sections.push(dummySection);
 
   return `${sections.join("\n\n")}\n`;
 }

@@ -12,7 +12,8 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "gen:catalog": "tsx scripts/build-catalog.ts",
-    "check": "npm run typecheck && npm run lint && npm run test"
+    "check": "npm run typecheck && npm run lint && npm run test",
+    "gen:assets": "tsx scripts/build-assets.ts"
   },
   "dependencies": {
     "@dnd-kit/core": "^6.3.1",

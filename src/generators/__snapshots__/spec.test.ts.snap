@@ -1,0 +1,31 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`generateSpecMarkdown > matches snapshot 1`] = `
+"# 顧客管理 — 画面スペック
+
+- モード: UI
+- 実装方式: plain-tailwind
+- コンポーネント数: 4
+
+## 構造
+
+- カード 🔒 \`card-a\`
+  - テーブル ⚙ \`table-b\`
+  - ボタン \`btn-c\`
+- ボタン \`btn-d\`
+
+凡例: 🔒 = 変更禁止(凍結) / ⚙ = 挙動メモあり
+
+## 使用コンポーネント
+
+| コンポーネント | type | 個数 | 説明 |
+|---|---|---|---|
+| ボタン | \`button\` | 2 | クリックでアクションを実行する基本要素。 |
+| カード | \`card\` | 1 | 関連する情報をまとめて表示するコンテナ。 |
+| テーブル | \`table\` | 1 | 行と列でデータを一覧表示する。 |
+
+## 挙動仕様
+
+- **テーブル** \`table-b\`: 行クリックで詳細を表示
+"
+`;

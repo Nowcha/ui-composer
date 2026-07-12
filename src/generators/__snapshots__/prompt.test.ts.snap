@@ -9,6 +9,15 @@ exports[`generatePrompt > matches snapshot for a representative document 1`] = `
 - 構造はこの指示の階層どおりにすること。指示にないコンポーネントを追加しないこと
 - 各要素に data-uic-id 属性として [id: ...] の値を付与すること
 
+## 共通実装規約
+
+- モバイルファーストでレスポンシブ対応すること(320px〜1920pxで崩れない)
+- エラー状態・ローディング状態・空状態を必ず実装すること(正常系のみの納品は不可)
+- アイコンはPhosphor Iconsで weight=regular に統一すること
+- UIテキストはすべて日本語にすること(プレースホルダ・エラーメッセージ含む)
+- すべてのフォーム要素にlabelを関連付けること(placeholder をlabel代わりにしない)
+- TypeScript strict モードで型エラーゼロにすること。any 禁止
+
 ## レイアウト構造
 
 - カード(Card) [id: card-a1]

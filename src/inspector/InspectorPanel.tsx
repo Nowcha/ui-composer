@@ -4,6 +4,7 @@ import type { ComponentNode } from "../types/spec";
 import { useSpecStore } from "../store/spec-store";
 import { findNode } from "../store/tree-utils";
 import { getCatalogComponent } from "../catalog/catalog-data";
+import { DocumentSettings } from "./DocumentSettings";
 
 interface PropFieldProps {
   def: PropDef;
@@ -165,13 +166,7 @@ export const InspectorPanel: FC = () => {
       aria-label="プロパティパネル"
       className="h-full w-72 overflow-y-auto border-l border-slate-200 bg-white"
     >
-      {node ? (
-        <NodeEditor key={node.id} node={node} />
-      ) : (
-        <p className="p-4 text-sm text-slate-400">
-          ノードを選択するとプロパティを編集できます
-        </p>
-      )}
+      {node ? <NodeEditor key={node.id} node={node} /> : <DocumentSettings />}
     </aside>
   );
 };

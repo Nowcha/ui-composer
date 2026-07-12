@@ -25,6 +25,7 @@ npm run build        # 本番ビルド(GitHub Pages用、base設定済み)
 npm run typecheck    # tsc --noEmit
 npm run lint         # ESLint
 npm run gen:catalog  # scripts/build-catalog.ts で辞書JSON再生成
+npm run gen:assets   # scripts/build-assets.ts で規約/ダミーデータJSON再生成
 npm test             # Vitest(generators/ は必須カバレッジ)
 ```
 

@@ -1,0 +1,70 @@
+/**
+ * Japanese dummy data set (docs/04 asset #2).
+ * All entries are fictional — company names use 「架空」-safe invented
+ * names, addresses use non-existent block numbers.
+ * Edit here and run `npm run gen:assets`.
+ */
+
+export const dummyDataJa = {
+  people: [
+    { name: "佐藤 陽翔", kana: "さとう はると" },
+    { name: "鈴木 結衣", kana: "すずき ゆい" },
+    { name: "高橋 蒼真", kana: "たかはし そうま" },
+    { name: "田中 美咲", kana: "たなか みさき" },
+    { name: "伊藤 大和", kana: "いとう やまと" },
+    { name: "渡辺 さくら", kana: "わたなべ さくら" },
+    { name: "山本 湊", kana: "やまもと みなと" },
+    { name: "中村 芽依", kana: "なかむら めい" },
+    { name: "小林 律", kana: "こばやし りつ" },
+    { name: "加藤 紬", kana: "かとう つむぎ" },
+    { name: "吉田 悠人", kana: "よしだ ゆうと" },
+    { name: "山田 陽菜", kana: "やまだ ひな" },
+    { name: "佐々木 朝陽", kana: "ささき あさひ" },
+    { name: "山口 凛", kana: "やまぐち りん" },
+    { name: "松本 樹", kana: "まつもと いつき" },
+    { name: "井上 葵", kana: "いのうえ あおい" },
+    { name: "木村 颯太", kana: "きむら そうた" },
+    { name: "林 心春", kana: "はやし こはる" },
+    { name: "斎藤 蓮", kana: "さいとう れん" },
+    { name: "清水 詩織", kana: "しみず しおり" },
+  ],
+  companies: [
+    "株式会社アオバ製作所",
+    "ミナトデジタル株式会社",
+    "株式会社ハルカゼ商事",
+    "コダマ物流株式会社",
+    "株式会社ツバキ食品",
+    "ヒカリ電設株式会社",
+    "株式会社モリノネ企画",
+    "サクラバシ建設株式会社",
+    "株式会社ナギサ薬品",
+    "トワダ精密株式会社",
+  ],
+  departments: ["営業部", "開発部", "総務部", "経理部", "人事部", "企画部", "品質保証部"],
+  positions: ["部長", "課長", "係長", "主任", "リーダー", "メンバー"],
+  addresses: [
+    "東京都架空区南橋本1-23-45",
+    "大阪府架空市中津川2-3-4 グランビル7F",
+    "愛知県架空市東山町5-6-7",
+    "福岡県架空市海浜3-2-1 ベイサイド802",
+  ],
+  emails: [
+    "h.sato@example.co.jp",
+    "yui.suzuki@example.com",
+    "tanaka-m@example.jp",
+    "info@example.org",
+  ],
+  dates: ["2026/06/30", "2026/07/01", "2026/07/08", "2026/07/15", "2026/08/01"],
+  amounts: ["¥12,800", "¥98,000", "¥1,234,000", "¥5,600", "¥398,000"],
+  statuses: ["承認待ち", "承認済み", "差戻し", "処理中", "完了", "キャンセル"],
+  products: [
+    "スタンダードプラン",
+    "プロフェッショナルプラン",
+    "ワイヤレスキーボード WK-200",
+    "モバイルバッテリー PB-10",
+    "オフィスチェア OC-Ergo",
+    "会議室予約システム利用料",
+  ],
+};
+
+export type DummyDataJa = typeof dummyDataJa;

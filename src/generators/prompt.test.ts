@@ -91,6 +91,34 @@ describe("generatePrompt", () => {
     expect(output).not.toContain("テーブル:");
   });
 
+  test("includes default prompt rules for the mode", () => {
+    const output = generatePrompt(makeDocument());
+    expect(output).toContain("## 共通実装規約");
+    expect(output).toContain("モバイルファースト");
+    // report-only rules must not leak into UI mode
+    expect(output).not.toContain("単一HTMLファイル");
+  });
+
+  test("empty promptRules selection removes the rules section", () => {
+    const doc = makeDocument();
+    doc.meta.promptRules = [];
+    expect(generatePrompt(doc)).not.toContain("## 共通実装規約");
+  });
+
+  test("dummy data section appears only with data-hungry components", () => {
+    const doc = makeDocument();
+    expect(generatePrompt(doc)).not.toContain("## ダミーデータ指示");
+
+    doc.tree.children?.push({
+      id: "table-x1",
+      type: "table",
+      props: { columns: "名前, 状態" },
+    });
+    const output = generatePrompt(doc);
+    expect(output).toContain("## ダミーデータ指示");
+    expect(output).toContain("承認待ち");
+  });
+
   test("handles an empty tree", () => {
     const doc = makeDocument();
     doc.tree = { id: "root", type: "root", props: {}, children: [] };

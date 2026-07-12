@@ -57,10 +57,13 @@ interface SpecState {
   ) => void;
   moveNodeById: (id: string, newParentId: string, index?: number) => void;
   duplicateNode: (id: string) => void;
+  /** Replaces root children with template nodes (fresh ids, undoable). */
+  applyTemplate: (nodes: ComponentNode[], name: string) => void;
 
   // --- document-level ---
   setMode: (mode: ComposerMode) => void;
   setDocumentName: (name: string) => void;
+  setPromptRules: (ruleIds: string[]) => void;
   loadDocument: (doc: SpecDocument) => void;
   resetDocument: (mode?: ComposerMode) => void;
 
@@ -124,6 +127,22 @@ export const useSpecStore = create<SpecState>((set, get) => {
       set({ selectedNodeId: copy.id });
     },
 
+    applyTemplate: (nodes, name) => {
+      const { document } = get();
+      const children = nodes.map((node) =>
+        cloneWithNewIds(node, createNodeId),
+      );
+      commitTree({ ...document.tree, children });
+      const current = get();
+      set({
+        document: {
+          ...current.document,
+          meta: { ...current.document.meta, name },
+        },
+        selectedNodeId: null,
+      });
+    },
+
     setMode: (mode) => {
       const { document } = get();
       set({ document: { ...document, meta: { ...document.meta, mode } } });
@@ -132,6 +151,16 @@ export const useSpecStore = create<SpecState>((set, get) => {
     setDocumentName: (name) => {
       const { document } = get();
       set({ document: { ...document, meta: { ...document.meta, name } } });
+    },
+
+    setPromptRules: (ruleIds) => {
+      const { document } = get();
+      set({
+        document: {
+          ...document,
+          meta: { ...document.meta, promptRules: ruleIds },
+        },
+      });
     },
 
     loadDocument: (doc) => {

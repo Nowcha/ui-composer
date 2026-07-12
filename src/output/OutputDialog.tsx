@@ -4,12 +4,14 @@ import { loadSnapshotPayload } from "../store/snapshot-storage";
 import { generatePrompt } from "../generators/prompt";
 import { generateDiffPrompt } from "../generators/diff-prompt";
 import { generateHtmlReport } from "../generators/html-report";
+import { generateSpecMarkdown } from "../generators/spec";
 
-type OutputTab = "prompt" | "diff" | "html" | "json";
+type OutputTab = "prompt" | "diff" | "spec" | "html" | "json";
 
 const TAB_LABELS: Record<OutputTab, string> = {
   prompt: "全量プロンプト",
   diff: "差分プロンプト",
+  spec: "スペック文書",
   html: "HTMLレポート",
   json: "スペックJSON",
 };
@@ -38,13 +40,14 @@ export const OutputDialog: FC<OutputDialogProps> = ({ onClose }) => {
   const availableTabs = useMemo<OutputTab[]>(
     () =>
       document_.meta.mode === "report"
-        ? ["prompt", "diff", "html", "json"]
-        : ["prompt", "diff", "json"],
+        ? ["prompt", "diff", "spec", "html", "json"]
+        : ["prompt", "diff", "spec", "json"],
     [document_.meta.mode],
   );
 
   const content = useMemo(() => {
     if (tab === "prompt") return generatePrompt(document_);
+    if (tab === "spec") return generateSpecMarkdown(document_);
     if (tab === "html") return generateHtmlReport(document_);
     if (tab === "json") return `${JSON.stringify(document_, null, 2)}\n`;
     // diff tab
@@ -83,12 +86,14 @@ export const OutputDialog: FC<OutputDialogProps> = ({ onClose }) => {
     const anchor = document.createElement("a");
     anchor.href = url;
     const base = document_.meta.name || "spec";
+    const mdName =
+      tab === "diff" ? "diff" : tab === "spec" ? "spec" : "prompt";
     anchor.download =
       tab === "json"
         ? `${base}.uic.json`
         : tab === "html"
           ? `${base}.html`
-          : `${base}-${tab === "diff" ? "diff" : "prompt"}.md`;
+          : `${base}-${mdName}.md`;
     anchor.click();
     URL.revokeObjectURL(url);
   }

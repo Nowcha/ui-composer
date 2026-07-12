@@ -2,6 +2,8 @@ import { useEffect, useRef, useState, type FC } from "react";
 import { useSpecStore } from "./store/spec-store";
 import { parseSpecDocument } from "./store/persistence";
 import { importHtmlReport } from "./importers/html";
+import { screenTemplates } from "./templates/screen-templates";
+import { buildShareUrl } from "./store/url-share";
 import { CatalogPanel } from "./catalog/CatalogPanel";
 import { CanvasPanel } from "./canvas/CanvasPanel";
 import { InspectorPanel } from "./inspector/InspectorPanel";
@@ -20,7 +22,34 @@ const App: FC = () => {
   const canRedo = useSpecStore((s) => s.future.length > 0);
   const saveSnapshot = useSpecStore((s) => s.saveSnapshot);
   const loadDocument = useSpecStore((s) => s.loadDocument);
+  const applyTemplate = useSpecStore((s) => s.applyTemplate);
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  function handleApplyTemplate(templateId: string): void {
+    const template = screenTemplates.find((t) => t.id === templateId);
+    if (!template) return;
+    const { document } = useSpecStore.getState();
+    const hasContent = (document.tree.children?.length ?? 0) > 0;
+    if (
+      hasContent &&
+      !window.confirm(
+        `テンプレート「${template.nameJa}」で現在のキャンバスを置き換えますか?(Ctrl+Zで戻せます)`,
+      )
+    ) {
+      return;
+    }
+    applyTemplate(template.nodes, template.nameJa);
+  }
+
+  async function handleShare(): Promise<void> {
+    const url = buildShareUrl(useSpecStore.getState().document);
+    try {
+      await navigator.clipboard.writeText(url);
+      window.alert("共有URLをコピーしました(開くと同じレイアウトが再現されます)");
+    } catch {
+      window.prompt("以下のURLをコピーしてください:", url);
+    }
+  }
 
   function handleSaveSnapshot(): void {
     const label = `基準版 ${new Date().toLocaleString("ja-JP", {
@@ -112,6 +141,22 @@ const App: FC = () => {
             レポートモード
           </button>
         </nav>
+        <select
+          value=""
+          onChange={(e) => {
+            if (e.target.value) handleApplyTemplate(e.target.value);
+            e.target.value = "";
+          }}
+          aria-label="画面テンプレート"
+          className="rounded-md border border-slate-300 px-2 py-1 text-xs text-slate-600 focus:border-blue-500 focus:outline-none"
+        >
+          <option value="">テンプレート…</option>
+          {screenTemplates.map((t) => (
+            <option key={t.id} value={t.id} title={t.description}>
+              {t.nameJa}
+            </option>
+          ))}
+        </select>
         <div className="ml-auto flex gap-1">
           <button
             type="button"
@@ -145,6 +190,14 @@ const App: FC = () => {
             className="rounded-md border border-slate-300 px-2.5 py-1 text-xs text-slate-700 hover:bg-slate-100"
           >
             インポート
+          </button>
+          <button
+            type="button"
+            onClick={() => void handleShare()}
+            title="レイアウトをURLに埋め込んで共有"
+            className="rounded-md border border-slate-300 px-2.5 py-1 text-xs text-slate-700 hover:bg-slate-100"
+          >
+            共有
           </button>
           <input
             ref={fileInputRef}
