@@ -1,6 +1,43 @@
 import type { FC } from "react";
+import { useDroppable } from "@dnd-kit/core";
+import {
+  SortableContext,
+  verticalListSortingStrategy,
+} from "@dnd-kit/sortable";
 import { useSpecStore } from "../store/spec-store";
+import { useUiStore } from "../store/ui-store";
 import { TreeNodeView } from "./TreeNodeView";
+import { intoDropId } from "./dnd-ids";
+
+/** Root-level drop area — the whole canvas body accepts drops into root. */
+const RootDropArea: FC<{ isEmpty: boolean; children: React.ReactNode }> = ({
+  isEmpty,
+  children,
+}) => {
+  const isDragging = useUiStore((s) => s.isDragging);
+  const { setNodeRef, isOver } = useDroppable({ id: intoDropId("root") });
+
+  return (
+    <div
+      ref={setNodeRef}
+      className={`flex-1 overflow-y-auto p-3 ${
+        isDragging && isOver ? "bg-blue-50/60" : ""
+      }`}
+      onClick={(e) => e.stopPropagation()}
+    >
+      {isEmpty && !isDragging ? (
+        <div className="flex h-full items-center justify-center">
+          <p className="max-w-xs text-center text-sm leading-relaxed text-slate-400">
+            左のカタログからドラッグ(またはクリック)でコンポーネントを追加してください。
+            コンテナ(カード等)を選択中にクリック追加すると、その中に配置されます。
+          </p>
+        </div>
+      ) : (
+        children
+      )}
+    </div>
+  );
+};
 
 export const CanvasPanel: FC = () => {
   const tree = useSpecStore((s) => s.document.tree);
@@ -46,23 +83,16 @@ export const CanvasPanel: FC = () => {
           </button>
         </div>
       </div>
-      <div
-        className="flex-1 overflow-y-auto p-3"
-        onClick={(e) => e.stopPropagation()}
-      >
-        {isEmpty ? (
-          <div className="flex h-full items-center justify-center">
-            <p className="max-w-xs text-center text-sm leading-relaxed text-slate-400">
-              左のカタログからコンポーネントをクリックして追加してください。
-              コンテナ(カード等)を選択中に追加すると、その中に配置されます。
-            </p>
-          </div>
-        ) : (
-          tree.children?.map((child) => (
+      <RootDropArea isEmpty={isEmpty}>
+        <SortableContext
+          items={(tree.children ?? []).map((c) => c.id)}
+          strategy={verticalListSortingStrategy}
+        >
+          {tree.children?.map((child) => (
             <TreeNodeView key={child.id} node={child} depth={0} />
-          ))
-        )}
-      </div>
+          ))}
+        </SortableContext>
+      </RootDropArea>
     </main>
   );
 };

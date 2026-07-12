@@ -4,6 +4,7 @@ import { CatalogPanel } from "./catalog/CatalogPanel";
 import { CanvasPanel } from "./canvas/CanvasPanel";
 import { InspectorPanel } from "./inspector/InspectorPanel";
 import { OutputDialog } from "./output/OutputDialog";
+import { DndProvider } from "./canvas/DndProvider";
 
 const App: FC = () => {
   const [showOutput, setShowOutput] = useState(false);
@@ -100,11 +101,13 @@ const App: FC = () => {
         </div>
       </header>
       {showOutput && <OutputDialog onClose={() => setShowOutput(false)} />}
-      <div className="flex min-h-0 flex-1">
-        <CatalogPanel />
-        <CanvasPanel />
-        <InspectorPanel />
-      </div>
+      <DndProvider>
+        <div className="flex min-h-0 flex-1">
+          <CatalogPanel />
+          <CanvasPanel />
+          <InspectorPanel />
+        </div>
+      </DndProvider>
     </div>
   );
 };

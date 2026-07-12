@@ -1,5 +1,7 @@
 import { useMemo, useState, type FC } from "react";
+import { useDraggable } from "@dnd-kit/core";
 import type { CatalogComponent, Category } from "../types/catalog";
+import { paletteDragId } from "../canvas/dnd-ids";
 import { CATEGORY_LABELS_JA } from "../types/catalog";
 import { createNodeId, useSpecStore } from "../store/spec-store";
 import {
@@ -18,6 +20,32 @@ function matches(component: CatalogComponent, query: string): boolean {
     component.aliases.some((a) => a.toLowerCase().includes(q))
   );
 }
+
+/** Palette entry: draggable to the canvas, clickable for quick add. */
+const PaletteItem: FC<{
+  component: CatalogComponent;
+  onAdd: () => void;
+}> = ({ component, onAdd }) => {
+  const { attributes, listeners, setNodeRef } = useDraggable({
+    id: paletteDragId(component.id),
+  });
+
+  return (
+    <li ref={setNodeRef}>
+      <button
+        type="button"
+        {...attributes}
+        {...listeners}
+        onClick={onAdd}
+        title={component.description}
+        className="flex w-full cursor-grab items-center justify-between rounded-md px-2 py-1.5 text-left text-sm hover:bg-blue-50 focus-visible:bg-blue-50 focus-visible:outline-none"
+      >
+        <span>{component.nameJa}</span>
+        <span className="text-xs text-slate-400">{component.name}</span>
+      </button>
+    </li>
+  );
+};
 
 export const CatalogPanel: FC = () => {
   const [query, setQuery] = useState("");
@@ -80,17 +108,11 @@ export const CatalogPanel: FC = () => {
             </h3>
             <ul>
               {components.map((c) => (
-                <li key={c.id}>
-                  <button
-                    type="button"
-                    onClick={() => handleAdd(c)}
-                    title={c.description}
-                    className="flex w-full items-center justify-between rounded-md px-2 py-1.5 text-left text-sm hover:bg-blue-50 focus-visible:bg-blue-50 focus-visible:outline-none"
-                  >
-                    <span>{c.nameJa}</span>
-                    <span className="text-xs text-slate-400">{c.name}</span>
-                  </button>
-                </li>
+                <PaletteItem
+                  key={c.id}
+                  component={c}
+                  onAdd={() => handleAdd(c)}
+                />
               ))}
             </ul>
           </section>
