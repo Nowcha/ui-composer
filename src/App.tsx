@@ -1,10 +1,12 @@
-import { useEffect, type FC } from "react";
+import { useEffect, useState, type FC } from "react";
 import { useSpecStore } from "./store/spec-store";
 import { CatalogPanel } from "./catalog/CatalogPanel";
 import { CanvasPanel } from "./canvas/CanvasPanel";
 import { InspectorPanel } from "./inspector/InspectorPanel";
+import { OutputDialog } from "./output/OutputDialog";
 
 const App: FC = () => {
+  const [showOutput, setShowOutput] = useState(false);
   const mode = useSpecStore((s) => s.document.meta.mode);
   const name = useSpecStore((s) => s.document.meta.name);
   const setMode = useSpecStore((s) => s.setMode);
@@ -88,8 +90,16 @@ const App: FC = () => {
           >
             進む →
           </button>
+          <button
+            type="button"
+            onClick={() => setShowOutput(true)}
+            className="ml-2 rounded-md bg-blue-600 px-3 py-1 text-xs font-medium text-white hover:bg-blue-700"
+          >
+            プロンプト生成
+          </button>
         </div>
       </header>
+      {showOutput && <OutputDialog onClose={() => setShowOutput(false)} />}
       <div className="flex min-h-0 flex-1">
         <CatalogPanel />
         <CanvasPanel />

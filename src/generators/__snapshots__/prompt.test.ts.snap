@@ -1,0 +1,37 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`generatePrompt > matches snapshot for a representative document 1`] = `
+"# UI実装指示: ログイン画面
+
+以下のレイアウト構造を正確に実装してください。
+- 対象: アプリケーションUI
+- 実装方式: plain-tailwind(Tailwind CSSベース、追加UIライブラリ依存なし)
+- 構造はこの指示の階層どおりにすること。指示にないコンポーネントを追加しないこと
+- 各要素に data-uic-id 属性として [id: ...] の値を付与すること
+
+## レイアウト構造
+
+- カード(Card) [id: card-a1]
+  - プロパティ: title="ログイン"
+  - テキスト入力(Text input) [id: text-input-b2]
+    - プロパティ: label="メールアドレス", inputType="email"
+  - テキスト入力(Text input) [id: text-input-c3]
+    - プロパティ: label="パスワード", inputType="password"
+    - 🔒 このコンポーネントは現状維持(変更禁止)
+  - ボタン(Button) [id: button-d4]
+    - プロパティ: label="ログイン", variant="primary"
+    - アイコン: sign-in (Phosphor, weight=regular)
+    - 挙動: クリックで認証し、成功時はダッシュボードへ遷移
+
+## 変更禁止(凍結)要素
+
+次の要素は現状維持とし、一切変更しないこと:
+- テキスト入力 [id: text-input-c3]
+
+## 実装時のアクセシビリティ要件
+
+- カード: カード全体をリンクにする場合は入れ子リンクを避ける
+- テキスト入力: label要素と必ず関連付ける(for/id) / エラー時は aria-invalid と説明テキストを紐付ける
+- ボタン: アイコンのみの場合は aria-label を必ず付与する / disabled時もフォーカス順序を考慮する
+"
+`;
