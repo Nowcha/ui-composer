@@ -6,7 +6,7 @@ import { CATEGORY_LABELS_JA } from "../types/catalog";
 import { createNodeId, useSpecStore } from "../store/spec-store";
 import {
   buildDefaultProps,
-  catalogComponents,
+  componentsForMode,
   isContainerType,
 } from "./catalog-data";
 import { findNode } from "../store/tree-utils";
@@ -52,18 +52,20 @@ export const CatalogPanel: FC = () => {
   const addNode = useSpecStore((s) => s.addNode);
   const selectedNodeId = useSpecStore((s) => s.selectedNodeId);
   const tree = useSpecStore((s) => s.document.tree);
+  const mode = useSpecStore((s) => s.document.meta.mode);
 
   const grouped = useMemo(() => {
+    const forMode = componentsForMode(mode);
     const filtered = query.trim()
-      ? catalogComponents.filter((c) => matches(c, query.trim()))
-      : catalogComponents;
+      ? forMode.filter((c) => matches(c, query.trim()))
+      : forMode;
     const groups = new Map<Category, CatalogComponent[]>();
     for (const c of filtered) {
       const list = groups.get(c.category) ?? [];
       groups.set(c.category, [...list, c]);
     }
     return groups;
-  }, [query]);
+  }, [query, mode]);
 
   function handleAdd(component: CatalogComponent): void {
     // Drop into the selected container when possible, otherwise the root.

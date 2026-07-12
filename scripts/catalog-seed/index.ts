@@ -18,6 +18,7 @@ import { disclosureComponents } from "./disclosure";
 import { navigationComponents } from "./navigation";
 import { layoutComponents } from "./layout";
 import { mediaComponents } from "./media";
+import { reportComponents } from "./report";
 
 export const catalogSeed: CatalogComponent[] = [
   ...actionComponents,
@@ -30,4 +31,5 @@ export const catalogSeed: CatalogComponent[] = [
   ...navigationComponents,
   ...layoutComponents,
   ...mediaComponents,
+  ...reportComponents,
 ];

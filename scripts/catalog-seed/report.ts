@@ -1,0 +1,158 @@
+import type { CatalogComponent } from "../../src/types/catalog";
+
+/**
+ * Report-mode-only components (design v2 §2.2).
+ * Shared UI/report components (table, quote, timeline, ...) are marked
+ * in scripts/build-catalog.ts via REPORT_SHARED_IDS.
+ */
+export const reportComponents: CatalogComponent[] = [
+  {
+    id: "hero",
+    name: "Hero / Title block",
+    nameJa: "タイトルブロック",
+    modes: ["report"],
+    aliases: ["Hero", "Report header", "Cover"],
+    description: "レポート冒頭のタイトル・サブタイトル・日付のブロック。",
+    category: "layout",
+    isContainer: false,
+    typicalProps: [
+      { name: "title", type: "string", default: "レポートタイトル" },
+      { name: "subtitle", type: "string" },
+      { name: "date", type: "string" },
+      { name: "author", type: "string" },
+    ],
+    implementations: { shadcn: null, mui: null, radix: null, html: "<header>" },
+    a11yNotes: ["ページ唯一のh1をここに置く"],
+  },
+  {
+    id: "toc",
+    name: "Table of contents",
+    nameJa: "目次",
+    modes: ["report"],
+    aliases: ["TOC", "Contents"],
+    description: "レポート内セクションへのリンク一覧。実装時に自動生成を指示。",
+    category: "navigation",
+    isContainer: false,
+    typicalProps: [
+      { name: "title", type: "string", default: "目次" },
+      { name: "autoGenerate", type: "boolean", default: true },
+      { name: "maxDepth", type: "number", default: 2 },
+    ],
+    implementations: { shadcn: null, mui: null, radix: null, html: "<nav>" },
+    a11yNotes: ['nav要素に aria-label="目次" を付与する'],
+  },
+  {
+    id: "columns",
+    name: "Columns",
+    nameJa: "カラムレイアウト",
+    modes: ["report"],
+    aliases: ["Two column", "Three column", "Multi-column"],
+    description: "子要素を2〜3カラムに並べるレポート用レイアウト。",
+    category: "layout",
+    isContainer: true,
+    typicalProps: [
+      {
+        name: "count",
+        type: "enum",
+        enumValues: ["2", "3"],
+        default: "2",
+      },
+      {
+        name: "gap",
+        type: "enum",
+        enumValues: ["sm", "md", "lg"],
+        default: "md",
+      },
+    ],
+    implementations: { shadcn: null, mui: null, radix: null, html: null },
+    a11yNotes: ["視覚順とDOM順を一致させる", "印刷/モバイルでは縦積みにする"],
+  },
+  {
+    id: "comparison-table",
+    name: "Comparison table",
+    nameJa: "比較表",
+    modes: ["report"],
+    aliases: ["Comparison matrix", "Feature matrix"],
+    description: "選択肢を観点ごとに比較する表。◯△×や説明セルを想定。",
+    category: "display",
+    isContainer: false,
+    typicalProps: [
+      { name: "subjects", type: "string", default: "案A, 案B, 案C" },
+      { name: "criteria", type: "string", default: "コスト, 導入期間, 拡張性" },
+      { name: "highlightColumn", type: "number", default: 0 },
+    ],
+    implementations: { shadcn: null, mui: null, radix: null, html: "<table>" },
+    a11yNotes: [
+      "行列両方の見出しにth/scopeを使う",
+      "◯△×は記号だけでなくテキストも併記する",
+    ],
+  },
+  {
+    id: "chart-placeholder",
+    name: "Chart placeholder",
+    nameJa: "チャートプレースホルダ",
+    modes: ["report"],
+    aliases: ["Chart", "Graph placeholder"],
+    description: "チャートの種類とデータ性質を指定するプレースホルダ。実装はAIに委ねる。",
+    category: "display",
+    isContainer: false,
+    typicalProps: [
+      { name: "title", type: "string", default: "月次推移" },
+      {
+        name: "chartType",
+        type: "enum",
+        enumValues: ["line", "bar", "horizontal-bar", "pie", "scatter", "gauge"],
+        default: "line",
+      },
+      {
+        name: "dataNature",
+        type: "string",
+        default: "時系列(月次)の売上金額",
+      },
+      { name: "note", type: "string" },
+    ],
+    implementations: { shadcn: null, mui: null, radix: null, html: null },
+    a11yNotes: [
+      "チャートには代替テキスト(要点の文章)を必ず併記する",
+      "色だけで系列を区別しない",
+    ],
+  },
+  {
+    id: "callout",
+    name: "Callout",
+    nameJa: "コールアウト",
+    modes: ["report"],
+    aliases: ["Admonition", "Note box", "Info box"],
+    description: "本文から目立たせたい補足・注意・結論のボックス。",
+    category: "feedback",
+    isContainer: false,
+    typicalProps: [
+      { name: "title", type: "string", default: "ポイント" },
+      { name: "body", type: "string", default: "本文がここに入ります。" },
+      {
+        name: "tone",
+        type: "enum",
+        enumValues: ["info", "warning", "success", "danger"],
+        default: "info",
+      },
+    ],
+    implementations: { shadcn: null, mui: null, radix: null, html: null },
+    a11yNotes: ["色だけでなくアイコン/ラベルでも種別を示す"],
+  },
+  {
+    id: "source-note",
+    name: "Source note",
+    nameJa: "出典",
+    modes: ["report"],
+    aliases: ["Citation", "References", "Footnote"],
+    description: "データや引用の出典を示す小さな注記。",
+    category: "display",
+    isContainer: false,
+    typicalProps: [
+      { name: "text", type: "string", default: "出典: 社内売上データ(2026年6月)" },
+      { name: "url", type: "string" },
+    ],
+    implementations: { shadcn: null, mui: null, radix: null, html: "<small>" },
+    a11yNotes: ["リンクにする場合はリンクテキストを具体的にする"],
+  },
+];

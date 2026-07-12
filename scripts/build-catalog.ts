@@ -25,6 +25,33 @@ const DATA_DIR = path.join(
 
 const KEBAB_CASE = /^[a-z][a-z0-9]*(-[a-z0-9]+)*$/;
 
+/**
+ * UI components that are also usable in report mode (design v2 §2.2).
+ * Applied as a transform here so each seed entry stays single-sourced.
+ */
+const REPORT_SHARED_IDS = new Set([
+  "section",
+  "table",
+  "quote",
+  "timeline",
+  "stat-card",
+  "stepper",
+  "footer",
+  "image",
+  "divider",
+  "list",
+  "description-list",
+  "badge",
+]);
+
+function applyModes(components: CatalogComponent[]): CatalogComponent[] {
+  return components.map((c) =>
+    REPORT_SHARED_IDS.has(c.id) && !c.modes
+      ? { ...c, modes: ["ui", "report"] }
+      : c,
+  );
+}
+
 function validateComponents(components: CatalogComponent[]): string[] {
   const errors: string[] = [];
   const seenIds = new Set<string>();
@@ -40,6 +67,16 @@ function validateComponents(components: CatalogComponent[]): string[] {
 
     if (!CATEGORIES.includes(c.category)) {
       errors.push(`"${c.id}": invalid category "${c.category}"`);
+    }
+    if (c.modes) {
+      if (c.modes.length === 0) {
+        errors.push(`"${c.id}": modes must not be empty when present`);
+      }
+      for (const mode of c.modes) {
+        if (mode !== "ui" && mode !== "report") {
+          errors.push(`"${c.id}": invalid mode "${String(mode)}"`);
+        }
+      }
     }
     if (c.name.trim() === "" || c.nameJa.trim() === "") {
       errors.push(`"${c.id}": name/nameJa must not be empty`);
@@ -107,7 +144,8 @@ async function writeJson(fileName: string, data: unknown): Promise<void> {
 }
 
 async function main(): Promise<void> {
-  const errors = validateComponents(catalogSeed);
+  const components = applyModes(catalogSeed);
+  const errors = validateComponents(components);
   if (errors.length > 0) {
     console.error("components validation failed:");
     for (const e of errors) console.error(`  - ${e}`);
@@ -137,12 +175,15 @@ async function main(): Promise<void> {
   }
 
   await mkdir(DATA_DIR, { recursive: true });
-  await writeJson("components.json", catalogSeed);
+  await writeJson("components.json", components);
   await writeJson("icons.json", iconList);
   await writeJson("icon-categories-ja.json", ICON_CATEGORIES_JA);
 
+  const reportCount = components.filter((c) =>
+    c.modes?.includes("report"),
+  ).length;
   console.log(
-    `done: ${catalogSeed.length} components, ${iconList.length} icons`,
+    `done: ${components.length} components (${reportCount} report-capable), ${iconList.length} icons`,
   );
 }
 

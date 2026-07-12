@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState, type FC } from "react";
 import { useSpecStore } from "./store/spec-store";
 import { parseSpecDocument } from "./store/persistence";
+import { importHtmlReport } from "./importers/html";
 import { CatalogPanel } from "./catalog/CatalogPanel";
 import { CanvasPanel } from "./canvas/CanvasPanel";
 import { InspectorPanel } from "./inspector/InspectorPanel";
@@ -40,7 +41,8 @@ const App: FC = () => {
   async function handleImportFile(file: File): Promise<void> {
     try {
       const text = await file.text();
-      const doc = parseSpecDocument(text);
+      const isHtml = /\.html?$/i.test(file.name);
+      const doc = isHtml ? importHtmlReport(text) : parseSpecDocument(text);
       if (!doc) {
         window.alert(
           "インポートに失敗しました。UI Composer形式のJSONではありません。",
@@ -147,7 +149,7 @@ const App: FC = () => {
           <input
             ref={fileInputRef}
             type="file"
-            accept=".json,application/json"
+            accept=".json,.html,.htm,application/json,text/html"
             className="hidden"
             aria-label="スペックJSONをインポート"
             onChange={(e) => {

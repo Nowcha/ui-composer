@@ -46,6 +46,11 @@ export interface PropDef {
 export interface CatalogComponent {
   /** kebab-case id, e.g. "date-picker" */
   id: string;
+  /**
+   * Composer modes this component appears in.
+   * Absent = ["ui"] (UI mode only). Report-mode set is design v2 §2.2.
+   */
+  modes?: ("ui" | "report")[];
   name: string;
   nameJa: string;
   aliases: string[];

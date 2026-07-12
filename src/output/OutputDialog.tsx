@@ -3,12 +3,14 @@ import { useSpecStore } from "../store/spec-store";
 import { loadSnapshotPayload } from "../store/snapshot-storage";
 import { generatePrompt } from "../generators/prompt";
 import { generateDiffPrompt } from "../generators/diff-prompt";
+import { generateHtmlReport } from "../generators/html-report";
 
-type OutputTab = "prompt" | "diff" | "json";
+type OutputTab = "prompt" | "diff" | "html" | "json";
 
 const TAB_LABELS: Record<OutputTab, string> = {
   prompt: "全量プロンプト",
   diff: "差分プロンプト",
+  html: "HTMLレポート",
   json: "スペックJSON",
 };
 
@@ -33,8 +35,17 @@ export const OutputDialog: FC<OutputDialogProps> = ({ onClose }) => {
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [onClose]);
 
+  const availableTabs = useMemo<OutputTab[]>(
+    () =>
+      document_.meta.mode === "report"
+        ? ["prompt", "diff", "html", "json"]
+        : ["prompt", "diff", "json"],
+    [document_.meta.mode],
+  );
+
   const content = useMemo(() => {
     if (tab === "prompt") return generatePrompt(document_);
+    if (tab === "html") return generateHtmlReport(document_);
     if (tab === "json") return `${JSON.stringify(document_, null, 2)}\n`;
     // diff tab
     if (!baseSnapshotId) {
@@ -61,19 +72,23 @@ export const OutputDialog: FC<OutputDialogProps> = ({ onClose }) => {
   }
 
   function handleDownload(): void {
-    const isJson = tab === "json";
-    const blob = new Blob([content], {
-      type: isJson
+    const mime =
+      tab === "json"
         ? "application/json;charset=utf-8"
-        : "text/markdown;charset=utf-8",
-    });
+        : tab === "html"
+          ? "text/html;charset=utf-8"
+          : "text/markdown;charset=utf-8";
+    const blob = new Blob([content], { type: mime });
     const url = URL.createObjectURL(blob);
     const anchor = document.createElement("a");
     anchor.href = url;
     const base = document_.meta.name || "spec";
-    anchor.download = isJson
-      ? `${base}.uic.json`
-      : `${base}-${tab === "diff" ? "diff" : "prompt"}.md`;
+    anchor.download =
+      tab === "json"
+        ? `${base}.uic.json`
+        : tab === "html"
+          ? `${base}.html`
+          : `${base}-${tab === "diff" ? "diff" : "prompt"}.md`;
     anchor.click();
     URL.revokeObjectURL(url);
   }
@@ -96,7 +111,7 @@ export const OutputDialog: FC<OutputDialogProps> = ({ onClose }) => {
             aria-label="出力形式"
             className="flex rounded-md bg-slate-100 p-0.5"
           >
-            {(Object.keys(TAB_LABELS) as OutputTab[]).map((key) => (
+            {availableTabs.map((key) => (
               <button
                 key={key}
                 type="button"

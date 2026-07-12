@@ -6,11 +6,16 @@
 
 import componentsJson from "../data/components.json";
 import type { CatalogComponent } from "../types/catalog";
-import type { ComponentNode } from "../types/spec";
-import { ROOT_NODE_TYPE } from "../types/spec";
+import type { ComponentNode, ComposerMode } from "../types/spec";
+import { RAW_BLOCK_TYPE, ROOT_NODE_TYPE } from "../types/spec";
 
 export const catalogComponents =
   componentsJson as unknown as CatalogComponent[];
+
+/** Components available in the given mode (absent modes = UI only). */
+export function componentsForMode(mode: ComposerMode): CatalogComponent[] {
+  return catalogComponents.filter((c) => (c.modes ?? ["ui"]).includes(mode));
+}
 
 const byId = new Map<string, CatalogComponent>(
   catalogComponents.map((c) => [c.id, c]),
@@ -43,6 +48,7 @@ export function buildDefaultProps(
 
 /** Display label for a node in the tree view. */
 export function nodeLabel(node: ComponentNode): string {
+  if (node.type === RAW_BLOCK_TYPE) return "Rawブロック(非破壊)";
   const def = byId.get(node.type);
   const base = def?.nameJa ?? node.type;
   const text =
