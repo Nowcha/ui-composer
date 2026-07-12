@@ -11,8 +11,17 @@
  */
 
 import { create } from "zustand";
-import type { ComponentNode, ComposerMode, SpecDocument } from "../types/spec";
+import type {
+  ComponentNode,
+  ComposerMode,
+  SnapshotRef,
+  SpecDocument,
+} from "../types/spec";
 import { createEmptyDocument } from "../types/spec";
+import {
+  deleteSnapshotPayload,
+  saveSnapshotPayload,
+} from "./snapshot-storage";
 import {
   cloneWithNewIds,
   findNode,
@@ -54,6 +63,10 @@ interface SpecState {
   setDocumentName: (name: string) => void;
   loadDocument: (doc: SpecDocument) => void;
   resetDocument: (mode?: ComposerMode) => void;
+
+  // --- snapshots (Phase 2) ---
+  saveSnapshot: (label: string) => boolean;
+  deleteSnapshot: (id: string) => void;
 
   // --- history ---
   undo: () => void;
@@ -132,6 +145,34 @@ export const useSpecStore = create<SpecState>((set, get) => {
         selectedNodeId: null,
         past: [],
         future: [],
+      });
+    },
+
+    saveSnapshot: (label) => {
+      const { document } = get();
+      const id = `snap-${Date.now().toString(36)}-${Math.random()
+        .toString(36)
+        .slice(2, 6)}`;
+      if (!saveSnapshotPayload(id, document.tree)) return false;
+      const ref: SnapshotRef = {
+        id,
+        label,
+        createdAt: new Date().toISOString(),
+      };
+      set({
+        document: { ...document, snapshots: [...document.snapshots, ref] },
+      });
+      return true;
+    },
+
+    deleteSnapshot: (id) => {
+      deleteSnapshotPayload(id);
+      const { document } = get();
+      set({
+        document: {
+          ...document,
+          snapshots: document.snapshots.filter((s) => s.id !== id),
+        },
       });
     },
 

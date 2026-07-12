@@ -1,0 +1,29 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`generateDiffPrompt > matches snapshot for a mixed diff 1`] = `
+"# UI改修指示(差分のみ): 設定画面
+
+基準版「初版」からの差分だけを実装してください。
+**以下に列挙した変更以外は、コード・構造・スタイルを一切変更しないこと。**
+対象要素は data-uic-id 属性([id: ...])で特定すること。
+
+## 追加
+
+- 追加先: カード(Card) [id: card-a1] の中、位置: 2番目
+  - ボタン(Button) [id: button-c3] (label="保存", variant="primary")
+    - 挙動: クリックで設定を保存
+
+## 変更
+
+- カード(Card) [id: card-a1](場所: トップレベル)
+  - このノードは以後変更禁止(凍結)になった
+- スイッチ(Switch) [id: switch-b2](場所: カード(Card) [id: card-a1] の中)
+  - プロパティ変更: label: "メール通知" → "メール通知を受け取る"
+  - プロパティ変更: checked: false → true
+
+## 変更禁止(凍結)要素
+
+次の要素は上記の差分に含まれていても現状維持を優先し、変更しないこと:
+- カード(Card) [id: card-a1]
+"
+`;

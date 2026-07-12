@@ -1,5 +1,6 @@
-import { useEffect, useState, type FC } from "react";
+import { useEffect, useRef, useState, type FC } from "react";
 import { useSpecStore } from "./store/spec-store";
+import { parseSpecDocument } from "./store/persistence";
 import { CatalogPanel } from "./catalog/CatalogPanel";
 import { CanvasPanel } from "./canvas/CanvasPanel";
 import { InspectorPanel } from "./inspector/InspectorPanel";
@@ -16,6 +17,43 @@ const App: FC = () => {
   const redo = useSpecStore((s) => s.redo);
   const canUndo = useSpecStore((s) => s.past.length > 0);
   const canRedo = useSpecStore((s) => s.future.length > 0);
+  const saveSnapshot = useSpecStore((s) => s.saveSnapshot);
+  const loadDocument = useSpecStore((s) => s.loadDocument);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  function handleSaveSnapshot(): void {
+    const label = `基準版 ${new Date().toLocaleString("ja-JP", {
+      month: "2-digit",
+      day: "2-digit",
+      hour: "2-digit",
+      minute: "2-digit",
+    })}`;
+    if (saveSnapshot(label)) {
+      window.alert(`スナップショット「${label}」を保存しました`);
+    } else {
+      window.alert(
+        "スナップショットの保存に失敗しました(localStorageの容量不足の可能性)",
+      );
+    }
+  }
+
+  async function handleImportFile(file: File): Promise<void> {
+    try {
+      const text = await file.text();
+      const doc = parseSpecDocument(text);
+      if (!doc) {
+        window.alert(
+          "インポートに失敗しました。UI Composer形式のJSONではありません。",
+        );
+        return;
+      }
+      loadDocument(doc);
+      // Design v2 §4: create the diff baseline right after import
+      saveSnapshot("インポート基準版");
+    } catch {
+      window.alert("ファイルの読み込みに失敗しました。");
+    }
+  }
 
   useEffect(() => {
     function handleKeyDown(e: KeyboardEvent): void {
@@ -93,10 +131,37 @@ const App: FC = () => {
           </button>
           <button
             type="button"
-            onClick={() => setShowOutput(true)}
-            className="ml-2 rounded-md bg-blue-600 px-3 py-1 text-xs font-medium text-white hover:bg-blue-700"
+            onClick={handleSaveSnapshot}
+            title="現在の状態を差分プロンプトの基準として保存"
+            className="ml-2 rounded-md border border-slate-300 px-2.5 py-1 text-xs text-slate-700 hover:bg-slate-100"
           >
-            プロンプト生成
+            📸 基準版を保存
+          </button>
+          <button
+            type="button"
+            onClick={() => fileInputRef.current?.click()}
+            className="rounded-md border border-slate-300 px-2.5 py-1 text-xs text-slate-700 hover:bg-slate-100"
+          >
+            インポート
+          </button>
+          <input
+            ref={fileInputRef}
+            type="file"
+            accept=".json,application/json"
+            className="hidden"
+            aria-label="スペックJSONをインポート"
+            onChange={(e) => {
+              const file = e.target.files?.[0];
+              if (file) void handleImportFile(file);
+              e.target.value = "";
+            }}
+          />
+          <button
+            type="button"
+            onClick={() => setShowOutput(true)}
+            className="rounded-md bg-blue-600 px-3 py-1 text-xs font-medium text-white hover:bg-blue-700"
+          >
+            出力
           </button>
         </div>
       </header>

@@ -1,6 +1,16 @@
 import { useEffect, useMemo, useState, type FC } from "react";
 import { useSpecStore } from "../store/spec-store";
+import { loadSnapshotPayload } from "../store/snapshot-storage";
 import { generatePrompt } from "../generators/prompt";
+import { generateDiffPrompt } from "../generators/diff-prompt";
+
+type OutputTab = "prompt" | "diff" | "json";
+
+const TAB_LABELS: Record<OutputTab, string> = {
+  prompt: "全量プロンプト",
+  diff: "差分プロンプト",
+  json: "スペックJSON",
+};
 
 interface OutputDialogProps {
   onClose: () => void;
@@ -8,8 +18,12 @@ interface OutputDialogProps {
 
 export const OutputDialog: FC<OutputDialogProps> = ({ onClose }) => {
   const document_ = useSpecStore((s) => s.document);
+  const [tab, setTab] = useState<OutputTab>("prompt");
   const [copied, setCopied] = useState(false);
-  const prompt = useMemo(() => generatePrompt(document_), [document_]);
+  const snapshots = document_.snapshots;
+  const [baseSnapshotId, setBaseSnapshotId] = useState<string | null>(
+    snapshots.length > 0 ? (snapshots[snapshots.length - 1]?.id ?? null) : null,
+  );
 
   useEffect(() => {
     function handleKeyDown(e: KeyboardEvent): void {
@@ -19,13 +33,27 @@ export const OutputDialog: FC<OutputDialogProps> = ({ onClose }) => {
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [onClose]);
 
+  const content = useMemo(() => {
+    if (tab === "prompt") return generatePrompt(document_);
+    if (tab === "json") return `${JSON.stringify(document_, null, 2)}\n`;
+    // diff tab
+    if (!baseSnapshotId) {
+      return "基準となるスナップショットがありません。\nヘッダーの「📸 基準版を保存」で現在の状態を保存してから編集すると、差分プロンプトを生成できます。";
+    }
+    const ref = snapshots.find((s) => s.id === baseSnapshotId);
+    const baseTree = loadSnapshotPayload(baseSnapshotId);
+    if (!ref || !baseTree) {
+      return "スナップショットの読み込みに失敗しました(削除された可能性があります)。";
+    }
+    return generateDiffPrompt(baseTree, document_, ref.label);
+  }, [tab, document_, baseSnapshotId, snapshots]);
+
   async function handleCopy(): Promise<void> {
     try {
-      await navigator.clipboard.writeText(prompt);
+      await navigator.clipboard.writeText(content);
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
     } catch {
-      // Clipboard API can fail on insecure contexts — fall back to selection
       window.alert(
         "クリップボードへのコピーに失敗しました。テキストを手動で選択してコピーしてください。",
       );
@@ -33,11 +61,19 @@ export const OutputDialog: FC<OutputDialogProps> = ({ onClose }) => {
   }
 
   function handleDownload(): void {
-    const blob = new Blob([prompt], { type: "text/markdown;charset=utf-8" });
+    const isJson = tab === "json";
+    const blob = new Blob([content], {
+      type: isJson
+        ? "application/json;charset=utf-8"
+        : "text/markdown;charset=utf-8",
+    });
     const url = URL.createObjectURL(blob);
     const anchor = document.createElement("a");
     anchor.href = url;
-    anchor.download = `${document_.meta.name || "spec"}-prompt.md`;
+    const base = document_.meta.name || "spec";
+    anchor.download = isJson
+      ? `${base}.uic.json`
+      : `${base}-${tab === "diff" ? "diff" : "prompt"}.md`;
     anchor.click();
     URL.revokeObjectURL(url);
   }
@@ -50,15 +86,48 @@ export const OutputDialog: FC<OutputDialogProps> = ({ onClose }) => {
       <div
         role="dialog"
         aria-modal="true"
-        aria-label="生成されたプロンプト"
+        aria-label="出力"
         className="flex max-h-full w-full max-w-3xl flex-col rounded-lg bg-white shadow-xl"
         onClick={(e) => e.stopPropagation()}
       >
-        <div className="flex items-center justify-between border-b border-slate-200 px-4 py-3">
-          <h2 className="text-sm font-semibold text-slate-800">
-            Claude Code用プロンプト
-          </h2>
-          <div className="flex gap-2">
+        <div className="flex items-center gap-3 border-b border-slate-200 px-4 py-3">
+          <div
+            role="tablist"
+            aria-label="出力形式"
+            className="flex rounded-md bg-slate-100 p-0.5"
+          >
+            {(Object.keys(TAB_LABELS) as OutputTab[]).map((key) => (
+              <button
+                key={key}
+                type="button"
+                role="tab"
+                aria-selected={tab === key}
+                onClick={() => setTab(key)}
+                className={`rounded px-3 py-1 text-xs font-medium ${
+                  tab === key
+                    ? "bg-white text-slate-900 shadow-sm"
+                    : "text-slate-500 hover:text-slate-700"
+                }`}
+              >
+                {TAB_LABELS[key]}
+              </button>
+            ))}
+          </div>
+          {tab === "diff" && snapshots.length > 0 && (
+            <select
+              value={baseSnapshotId ?? ""}
+              onChange={(e) => setBaseSnapshotId(e.target.value)}
+              aria-label="基準スナップショット"
+              className="rounded-md border border-slate-300 px-2 py-1 text-xs focus:border-blue-500 focus:outline-none"
+            >
+              {snapshots.map((s) => (
+                <option key={s.id} value={s.id}>
+                  {s.label}({new Date(s.createdAt).toLocaleString("ja-JP")})
+                </option>
+              ))}
+            </select>
+          )}
+          <div className="ml-auto flex gap-2">
             <button
               type="button"
               onClick={() => void handleCopy()}
@@ -71,7 +140,7 @@ export const OutputDialog: FC<OutputDialogProps> = ({ onClose }) => {
               onClick={handleDownload}
               className="rounded-md border border-slate-300 px-3 py-1.5 text-xs text-slate-700 hover:bg-slate-100"
             >
-              .mdダウンロード
+              ダウンロード
             </button>
             <button
               type="button"
@@ -84,7 +153,7 @@ export const OutputDialog: FC<OutputDialogProps> = ({ onClose }) => {
           </div>
         </div>
         <pre className="flex-1 overflow-auto whitespace-pre-wrap p-4 text-xs leading-relaxed text-slate-800">
-          {prompt}
+          {content}
         </pre>
       </div>
     </div>
