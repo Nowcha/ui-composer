@@ -1,0 +1,11 @@
+@import "tailwindcss";
+
+:root {
+  font-family:
+    "Hiragino Kaku Gothic ProN",
+    "Hiragino Sans",
+    "BIZ UDPGothic",
+    Meiryo,
+    system-ui,
+    sans-serif;
+}
