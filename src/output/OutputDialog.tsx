@@ -5,13 +5,15 @@ import { generatePrompt } from "../generators/prompt";
 import { generateDiffPrompt } from "../generators/diff-prompt";
 import { generateHtmlReport } from "../generators/html-report";
 import { generateSpecMarkdown } from "../generators/spec";
+import { getCodeGenerator } from "../generators/code/index";
 
-type OutputTab = "prompt" | "diff" | "spec" | "html" | "json";
+type OutputTab = "prompt" | "diff" | "spec" | "code" | "html" | "json";
 
 const TAB_LABELS: Record<OutputTab, string> = {
   prompt: "全量プロンプト",
   diff: "差分プロンプト",
   spec: "スペック文書",
+  code: "Reactコード",
   html: "HTMLレポート",
   json: "スペックJSON",
 };
@@ -41,13 +43,19 @@ export const OutputDialog: FC<OutputDialogProps> = ({ onClose }) => {
     () =>
       document_.meta.mode === "report"
         ? ["prompt", "diff", "spec", "html", "json"]
-        : ["prompt", "diff", "spec", "json"],
+        : ["prompt", "diff", "spec", "code", "json"],
     [document_.meta.mode],
   );
 
   const content = useMemo(() => {
     if (tab === "prompt") return generatePrompt(document_);
     if (tab === "spec") return generateSpecMarkdown(document_);
+    if (tab === "code") {
+      const files = getCodeGenerator(document_.meta.targetLibrary).generate(
+        document_,
+      );
+      return files.map((f) => f.content).join("\n");
+    }
     if (tab === "html") return generateHtmlReport(document_);
     if (tab === "json") return `${JSON.stringify(document_, null, 2)}\n`;
     // diff tab
@@ -80,7 +88,9 @@ export const OutputDialog: FC<OutputDialogProps> = ({ onClose }) => {
         ? "application/json;charset=utf-8"
         : tab === "html"
           ? "text/html;charset=utf-8"
-          : "text/markdown;charset=utf-8";
+          : tab === "code"
+            ? "text/plain;charset=utf-8"
+            : "text/markdown;charset=utf-8";
     const blob = new Blob([content], { type: mime });
     const url = URL.createObjectURL(blob);
     const anchor = document.createElement("a");
@@ -93,7 +103,9 @@ export const OutputDialog: FC<OutputDialogProps> = ({ onClose }) => {
         ? `${base}.uic.json`
         : tab === "html"
           ? `${base}.html`
-          : `${base}-${mdName}.md`;
+          : tab === "code"
+            ? `${base}.tsx`
+            : `${base}-${mdName}.md`;
     anchor.click();
     URL.revokeObjectURL(url);
   }
