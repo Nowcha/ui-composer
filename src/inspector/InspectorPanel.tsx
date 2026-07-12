@@ -1,10 +1,11 @@
-import type { FC } from "react";
+import { useState, type FC } from "react";
 import type { PropDef } from "../types/catalog";
 import type { ComponentNode } from "../types/spec";
 import { useSpecStore } from "../store/spec-store";
 import { findNode } from "../store/tree-utils";
 import { getCatalogComponent } from "../catalog/catalog-data";
 import { DocumentSettings } from "./DocumentSettings";
+import { IconPicker } from "./IconPicker";
 
 interface PropFieldProps {
   def: PropDef;
@@ -75,6 +76,7 @@ const PropField: FC<PropFieldProps> = ({ def, value, onChange }) => {
 const NodeEditor: FC<{ node: ComponentNode }> = ({ node }) => {
   const updateNodeById = useSpecStore((s) => s.updateNodeById);
   const catalogDef = getCatalogComponent(node.type);
+  const [showIconPicker, setShowIconPicker] = useState(false);
 
   function setProp(name: string, value: unknown): void {
     updateNodeById(node.id, { props: { ...node.props, [name]: value } });
@@ -120,6 +122,33 @@ const NodeEditor: FC<{ node: ComponentNode }> = ({ node }) => {
           ))}
         </section>
       )}
+
+      <section>
+        <h4 className="mb-1 text-xs font-semibold text-slate-500">アイコン</h4>
+        <button
+          type="button"
+          onClick={() => setShowIconPicker(true)}
+          className="w-full rounded-md border border-slate-300 px-2 py-1.5 text-left text-sm text-slate-700 hover:bg-slate-50"
+        >
+          {node.icon
+            ? `${node.icon.name} (${node.icon.weight})`
+            : "アイコンを選択…"}
+        </button>
+        {showIconPicker && (
+          <IconPicker
+            current={node.icon}
+            onSelect={(icon) => {
+              updateNodeById(node.id, { icon });
+              setShowIconPicker(false);
+            }}
+            onClear={() => {
+              updateNodeById(node.id, { icon: undefined });
+              setShowIconPicker(false);
+            }}
+            onClose={() => setShowIconPicker(false)}
+          />
+        )}
+      </section>
 
       <section>
         <label

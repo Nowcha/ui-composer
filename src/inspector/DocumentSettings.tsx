@@ -1,9 +1,12 @@
-import type { FC } from "react";
+import { useMemo, type FC } from "react";
 import { useSpecStore } from "../store/spec-store";
 import {
   defaultRuleIds,
   rulesForMode,
 } from "../generators/prompt-assets";
+import { lintTree } from "../lint/a11y";
+import { nodeLabel } from "../catalog/catalog-data";
+import { findNode } from "../store/tree-utils";
 
 /**
  * Shown in the inspector when no node is selected.
@@ -13,6 +16,12 @@ export const DocumentSettings: FC = () => {
   const mode = useSpecStore((s) => s.document.meta.mode);
   const promptRules = useSpecStore((s) => s.document.meta.promptRules);
   const setPromptRules = useSpecStore((s) => s.setPromptRules);
+  const tree = useSpecStore((s) => s.document.tree);
+  const snapshots = useSpecStore((s) => s.document.snapshots);
+  const deleteSnapshot = useSpecStore((s) => s.deleteSnapshot);
+  const selectNode = useSpecStore((s) => s.selectNode);
+
+  const lintIssues = useMemo(() => lintTree(tree), [tree]);
 
   const rules = rulesForMode(mode);
   const enabled = new Set(promptRules ?? defaultRuleIds(mode));
@@ -29,6 +38,75 @@ export const DocumentSettings: FC = () => {
 
   return (
     <div className="flex flex-col gap-3 p-3">
+      <section>
+        <h3 className="text-sm font-semibold text-slate-800">
+          スペック検査(a11y)
+        </h3>
+        {lintIssues.length === 0 ? (
+          <p className="mt-1 text-xs text-green-700">✓ 問題は見つかりませんでした</p>
+        ) : (
+          <ul className="mt-1 flex flex-col gap-1">
+            {lintIssues.map((issue) => {
+              const node = findNode(tree, issue.nodeId);
+              return (
+                <li key={`${issue.nodeId}-${issue.ruleId}`}>
+                  <button
+                    type="button"
+                    onClick={() => selectNode(issue.nodeId)}
+                    className="w-full rounded-md border border-amber-200 bg-amber-50 px-2 py-1.5 text-left text-xs leading-relaxed text-amber-900 hover:bg-amber-100"
+                  >
+                    <span className="font-medium">
+                      {node ? nodeLabel(node) : issue.nodeId}:
+                    </span>{" "}
+                    {issue.message}
+                  </button>
+                </li>
+              );
+            })}
+          </ul>
+        )}
+        <p className="mt-1 text-xs text-slate-400">
+          検出結果はプロンプトに「実装時の注意」として自動注記されます
+        </p>
+      </section>
+
+      {snapshots.length > 0 && (
+        <section>
+          <h3 className="text-sm font-semibold text-slate-800">
+            スナップショット履歴
+          </h3>
+          <ul className="mt-1 flex flex-col gap-1">
+            {snapshots.map((snap) => (
+              <li
+                key={snap.id}
+                className="flex items-center justify-between rounded-md border border-slate-200 px-2 py-1.5 text-xs"
+              >
+                <span className="min-w-0">
+                  <span className="block truncate text-slate-700">
+                    {snap.label}
+                  </span>
+                  <span className="text-slate-400">
+                    {new Date(snap.createdAt).toLocaleString("ja-JP")}
+                  </span>
+                </span>
+                <button
+                  type="button"
+                  onClick={() => {
+                    if (window.confirm(`「${snap.label}」を削除しますか?`)) {
+                      deleteSnapshot(snap.id);
+                    }
+                  }}
+                  aria-label={`${snap.label}を削除`}
+                  className="ml-2 shrink-0 rounded-md border border-red-200 px-2 py-0.5 text-red-700 hover:bg-red-50"
+                >
+                  削除
+                </button>
+              </li>
+            ))}
+          </ul>
+        </section>
+      )}
+
       <div>
         <h3 className="text-sm font-semibold text-slate-800">
           プロンプト共通規約

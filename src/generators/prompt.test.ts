@@ -119,6 +119,22 @@ describe("generatePrompt", () => {
     expect(output).toContain("承認待ち");
   });
 
+  test("annotates a11y lint issues", () => {
+    const doc = makeDocument();
+    doc.tree.children?.push({
+      id: "img-x1",
+      type: "image",
+      props: {},
+    });
+    const output = generatePrompt(doc);
+    expect(output).toContain("## 実装時の注意(スペック検査で検出)");
+    expect(output).toContain("[id: img-x1]");
+    // clean documents have no lint section
+    expect(generatePrompt(makeDocument())).not.toContain(
+      "スペック検査で検出",
+    );
+  });
+
   test("handles an empty tree", () => {
     const doc = makeDocument();
     doc.tree = { id: "root", type: "root", props: {}, children: [] };

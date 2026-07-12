@@ -12,6 +12,7 @@ import {
   renderDummyDataSection,
   renderRulesSection,
 } from "./prompt-assets";
+import { lintTree } from "../lint/a11y";
 
 const INDENT = "  ";
 
@@ -134,6 +135,15 @@ export function generatePrompt(doc: SpecDocument): string {
   if (a11yLines.length > 0) {
     sections.push(
       `## 実装時のアクセシビリティ要件\n\n${a11yLines.join("\n")}`,
+    );
+  }
+
+  const lintIssues = lintTree(doc.tree);
+  if (lintIssues.length > 0) {
+    sections.push(
+      `## 実装時の注意(スペック検査で検出)\n\n${lintIssues
+        .map((issue) => `- [id: ${issue.nodeId}] ${issue.message}`)
+        .join("\n")}`,
     );
   }
 
