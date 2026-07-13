@@ -2,13 +2,40 @@ import { useEffect, useRef, useState, type FC } from "react";
 import { useSpecStore } from "./store/spec-store";
 import { parseSpecDocument } from "./store/persistence";
 import { importHtmlReport } from "./importers/html";
-import { screenTemplates } from "./templates/screen-templates";
 import { buildShareUrl } from "./store/url-share";
 import { CatalogPanel } from "./catalog/CatalogPanel";
 import { CanvasPanel } from "./canvas/CanvasPanel";
 import { InspectorPanel } from "./inspector/InspectorPanel";
 import { OutputDialog } from "./output/OutputDialog";
 import { DndProvider } from "./canvas/DndProvider";
+
+function isEditableTarget(target: EventTarget | null): boolean {
+  const el = target as HTMLElement | null;
+  if (!el) return false;
+  return (
+    el.tagName === "INPUT" ||
+    el.tagName === "TEXTAREA" ||
+    el.tagName === "SELECT" ||
+    el.isContentEditable
+  );
+}
+
+const HeaderButton: FC<{
+  onClick: () => void;
+  disabled?: boolean;
+  title?: string;
+  children: React.ReactNode;
+}> = ({ onClick, disabled, title, children }) => (
+  <button
+    type="button"
+    onClick={onClick}
+    disabled={disabled}
+    title={title}
+    className="rounded-md border border-slate-200 px-2.5 py-1 text-xs text-slate-600 transition-colors hover:border-slate-300 hover:bg-slate-50 disabled:opacity-40"
+  >
+    {children}
+  </button>
+);
 
 const App: FC = () => {
   const [showOutput, setShowOutput] = useState(false);
@@ -22,24 +49,7 @@ const App: FC = () => {
   const canRedo = useSpecStore((s) => s.future.length > 0);
   const saveSnapshot = useSpecStore((s) => s.saveSnapshot);
   const loadDocument = useSpecStore((s) => s.loadDocument);
-  const applyTemplate = useSpecStore((s) => s.applyTemplate);
   const fileInputRef = useRef<HTMLInputElement>(null);
-
-  function handleApplyTemplate(templateId: string): void {
-    const template = screenTemplates.find((t) => t.id === templateId);
-    if (!template) return;
-    const { document } = useSpecStore.getState();
-    const hasContent = (document.tree.children?.length ?? 0) > 0;
-    if (
-      hasContent &&
-      !window.confirm(
-        `テンプレート「${template.nameJa}」で現在のキャンバスを置き換えますか?(Ctrl+Zで戻せます)`,
-      )
-    ) {
-      return;
-    }
-    applyTemplate(template.nodes, template.nameJa);
-  }
 
   async function handleShare(): Promise<void> {
     const url = buildShareUrl(useSpecStore.getState().document);
@@ -88,16 +98,31 @@ const App: FC = () => {
 
   useEffect(() => {
     function handleKeyDown(e: KeyboardEvent): void {
+      if (isEditableTarget(e.target)) return;
       const isMod = e.metaKey || e.ctrlKey;
-      if (!isMod || e.key.toLowerCase() !== "z") return;
-      // Don't hijack undo inside text fields
-      const target = e.target as HTMLElement;
-      if (target.tagName === "INPUT" || target.tagName === "TEXTAREA") return;
-      e.preventDefault();
-      if (e.shiftKey) {
-        redo();
-      } else {
-        undo();
+      const state = useSpecStore.getState();
+
+      if (isMod && e.key.toLowerCase() === "z") {
+        e.preventDefault();
+        if (e.shiftKey) redo();
+        else undo();
+        return;
+      }
+      if (isMod && e.key.toLowerCase() === "d" && state.selectedNodeId) {
+        e.preventDefault();
+        state.duplicateNode(state.selectedNodeId);
+        return;
+      }
+      if (
+        (e.key === "Delete" || e.key === "Backspace") &&
+        state.selectedNodeId
+      ) {
+        e.preventDefault();
+        state.removeNodeById(state.selectedNodeId);
+        return;
+      }
+      if (e.key === "Escape") {
+        state.selectNode(null);
       }
     }
     window.addEventListener("keydown", handleKeyDown);
@@ -106,99 +131,70 @@ const App: FC = () => {
 
   return (
     <div className="flex h-screen flex-col">
-      <header className="flex items-center gap-4 border-b border-slate-200 bg-white px-4 py-2">
-        <h1 className="text-sm font-bold text-slate-800">UI Composer</h1>
+      <header className="flex items-center gap-3 border-b border-slate-200 bg-white px-4 py-2">
+        <h1 className="flex items-center gap-1.5 text-sm font-bold text-slate-800">
+          <span
+            aria-hidden
+            className="inline-block h-4 w-4 rounded bg-gradient-to-br from-blue-500 to-indigo-600"
+          />
+          UI Composer
+        </h1>
         <input
           type="text"
           value={name}
           onChange={(e) => setDocumentName(e.target.value)}
           aria-label="スペック名"
-          className="rounded-md border border-transparent px-2 py-1 text-sm text-slate-600 hover:border-slate-300 focus:border-blue-500 focus:outline-none"
+          className="w-44 rounded-md border border-transparent px-2 py-1 text-sm text-slate-600 hover:border-slate-200 focus:border-blue-400 focus:outline-none"
         />
-        <nav aria-label="モード切替" className="flex rounded-md bg-slate-100 p-0.5">
-          <button
-            type="button"
-            onClick={() => setMode("ui")}
-            aria-pressed={mode === "ui"}
-            className={`rounded px-3 py-1 text-xs font-medium ${
-              mode === "ui"
-                ? "bg-white text-slate-900 shadow-sm"
-                : "text-slate-500 hover:text-slate-700"
-            }`}
-          >
-            UIモード
-          </button>
-          <button
-            type="button"
-            onClick={() => setMode("report")}
-            aria-pressed={mode === "report"}
-            className={`rounded px-3 py-1 text-xs font-medium ${
-              mode === "report"
-                ? "bg-white text-slate-900 shadow-sm"
-                : "text-slate-500 hover:text-slate-700"
-            }`}
-          >
-            レポートモード
-          </button>
-        </nav>
-        <select
-          value=""
-          onChange={(e) => {
-            if (e.target.value) handleApplyTemplate(e.target.value);
-            e.target.value = "";
-          }}
-          aria-label="画面テンプレート"
-          className="rounded-md border border-slate-300 px-2 py-1 text-xs text-slate-600 focus:border-blue-500 focus:outline-none"
-        >
-          <option value="">テンプレート…</option>
-          {screenTemplates.map((t) => (
-            <option key={t.id} value={t.id} title={t.description}>
-              {t.nameJa}
-            </option>
+        <nav aria-label="モード切替" className="flex rounded-lg bg-slate-100 p-0.5">
+          {(
+            [
+              ["ui", "UIモード"],
+              ["report", "レポートモード"],
+            ] as const
+          ).map(([value, label]) => (
+            <button
+              key={value}
+              type="button"
+              onClick={() => setMode(value)}
+              aria-pressed={mode === value}
+              className={`rounded-md px-3 py-1 text-xs font-medium transition-colors ${
+                mode === value
+                  ? "bg-white text-slate-900 shadow-sm"
+                  : "text-slate-400 hover:text-slate-600"
+              }`}
+            >
+              {label}
+            </button>
           ))}
-        </select>
-        <div className="ml-auto flex gap-1">
-          <button
-            type="button"
-            onClick={undo}
-            disabled={!canUndo}
-            title="元に戻す (Ctrl+Z)"
-            className="rounded-md border border-slate-300 px-2.5 py-1 text-xs text-slate-700 hover:bg-slate-100 disabled:opacity-40"
-          >
-            ← 戻す
-          </button>
-          <button
-            type="button"
+        </nav>
+        <div className="ml-auto flex items-center gap-1">
+          <HeaderButton onClick={undo} disabled={!canUndo} title="元に戻す (Ctrl+Z)">
+            ↶
+          </HeaderButton>
+          <HeaderButton
             onClick={redo}
             disabled={!canRedo}
             title="やり直す (Ctrl+Shift+Z)"
-            className="rounded-md border border-slate-300 px-2.5 py-1 text-xs text-slate-700 hover:bg-slate-100 disabled:opacity-40"
           >
-            進む →
-          </button>
-          <button
-            type="button"
+            ↷
+          </HeaderButton>
+          <span className="mx-1 h-4 w-px bg-slate-200" aria-hidden />
+          <HeaderButton
             onClick={handleSaveSnapshot}
             title="現在の状態を差分プロンプトの基準として保存"
-            className="ml-2 rounded-md border border-slate-300 px-2.5 py-1 text-xs text-slate-700 hover:bg-slate-100"
           >
-            📸 基準版を保存
-          </button>
-          <button
-            type="button"
-            onClick={() => fileInputRef.current?.click()}
-            className="rounded-md border border-slate-300 px-2.5 py-1 text-xs text-slate-700 hover:bg-slate-100"
-          >
+            📸 基準版
+          </HeaderButton>
+          <HeaderButton onClick={() => fileInputRef.current?.click()}>
             インポート
-          </button>
-          <button
-            type="button"
+          </HeaderButton>
+          <HeaderButton
             onClick={() => void handleShare()}
             title="レイアウトをURLに埋め込んで共有"
-            className="rounded-md border border-slate-300 px-2.5 py-1 text-xs text-slate-700 hover:bg-slate-100"
           >
             共有
-          </button>
+          </HeaderButton>
           <input
             ref={fileInputRef}
             type="file"
@@ -214,7 +210,7 @@ const App: FC = () => {
           <button
             type="button"
             onClick={() => setShowOutput(true)}
-            className="rounded-md bg-blue-600 px-3 py-1 text-xs font-medium text-white hover:bg-blue-700"
+            className="ml-1 rounded-md bg-blue-600 px-3.5 py-1.5 text-xs font-semibold text-white shadow-sm transition-colors hover:bg-blue-700"
           >
             出力
           </button>
