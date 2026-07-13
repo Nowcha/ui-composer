@@ -34,8 +34,9 @@ npm test             # Vitest(generators/ は必須カバレッジ)
 ```
 src/
 ├── data/            # components.json / icons.json(生成物。手編集禁止)
-├── canvas/          # キャンバス・D&D・ツリービュー
-├── catalog/         # 左パネル(コンポーネント/アイコン検索)
+├── canvas/          # WYSIWYGキャンバス・D&D(挿入インジケータ方式)
+├── catalog/         # 左パネル(パーツ/アイコン/テンプレ/レイヤーのタブ)
+├── preview/         # 実物風プレビューレンダラー登録簿(canvas/catalog/overlay共用)
 ├── inspector/       # 右パネル(プロパティ編集)
 ├── generators/      # prompt.ts / spec.ts / code/(純関数のみ)
 ├── store/           # Zustand ストア

@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState, type FC } from "react";
 import type { IconMeta } from "../types/catalog";
 import type { IconRef, PhosphorWeight } from "../types/spec";
 import iconCategoriesJa from "../data/icon-categories-ja.json";
+import { LazyIcon } from "../preview/LazyIcon";
 
 const WEIGHTS: PhosphorWeight[] = [
   "thin",
@@ -126,20 +127,20 @@ export const IconPicker: FC<IconPickerProps> = ({
           {icons && results.length === 0 && (
             <p className="text-sm text-slate-400">該当するアイコンがありません</p>
           )}
-          <ul className="flex flex-wrap gap-1.5">
+          <ul className="grid grid-cols-8 gap-1">
             {results.map((icon) => (
               <li key={icon.name}>
                 <button
                   type="button"
                   onClick={() => onSelect({ name: icon.name, weight })}
-                  title={icon.tags.slice(0, 6).join(", ")}
-                  className={`rounded-md border px-2 py-1 text-xs ${
+                  title={`${icon.name}\n${icon.tags.slice(0, 6).join(", ")}`}
+                  className={`flex aspect-square w-full items-center justify-center rounded-md border ${
                     current?.name === icon.name
                       ? "border-blue-500 bg-blue-50 text-blue-800"
-                      : "border-slate-200 text-slate-700 hover:bg-slate-50"
+                      : "border-transparent text-slate-700 hover:border-slate-200 hover:bg-slate-50"
                   }`}
                 >
-                  {icon.name}
+                  <LazyIcon icon={{ name: icon.name, weight }} size={22} />
                 </button>
               </li>
             ))}
