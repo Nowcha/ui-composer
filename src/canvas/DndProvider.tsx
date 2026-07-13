@@ -36,6 +36,7 @@ import {
   resolveIndicator,
   type Insertion,
 } from "./drop-resolver";
+import { getSpan, resolveAxis } from "./layout";
 import {
   ROOT_DROP_ID,
   parseIconDragId,
@@ -146,13 +147,17 @@ export const DndProvider: FC<{ children: ReactNode }> = ({ children }) => {
     }
     const tree = useSpecStore.getState().document.tree;
     const parent = findParent(tree, overId);
+    const overNode = findNode(tree, overId);
     ui.setDropIndicator(
       resolveIndicator({
         overNodeId: overId,
         overRect: over.rect,
         pointer,
-        isContainer: isContainerType(findNode(tree, overId)?.type ?? ""),
-        parentType: parent?.type ?? "root",
+        isContainer: isContainerType(overNode?.type ?? ""),
+        axis: resolveAxis(
+          parent?.type ?? "root",
+          overNode ? getSpan(overNode) : 12,
+        ),
       }),
     );
   }

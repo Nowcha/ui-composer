@@ -142,4 +142,15 @@ describe("generatePrompt", () => {
     expect(output).toContain("(コンポーネントなし)");
     expect(output).not.toContain("## 変更禁止");
   });
+
+  test("explains 12-column grid semantics only when colSpan is used", () => {
+    // default fixture has no colSpan — no grid note
+    expect(generatePrompt(makeDocument())).not.toContain("12カラムグリッド");
+
+    const doc = makeDocument();
+    doc.tree.children![0]!.children![0]!.props.colSpan = 6;
+    const output = generatePrompt(doc);
+    expect(output).toContain("12カラムグリッド");
+    expect(output).toContain("colSpan=6");
+  });
 });

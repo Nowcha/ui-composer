@@ -33,7 +33,7 @@ describe("resolveIndicator", () => {
       overNodeId: "a",
       overRect: rect,
       isContainer: false,
-      parentType: "root",
+      axis: "y" as const,
     };
     expect(
       resolveIndicator({ ...base, pointer: { x: 100, y: 120 } }).position,
@@ -48,7 +48,7 @@ describe("resolveIndicator", () => {
       overNodeId: "card1",
       overRect: rect,
       isContainer: true,
-      parentType: "root",
+      axis: "y" as const,
     };
     expect(
       resolveIndicator({ ...base, pointer: { x: 100, y: 105 } }).position,
@@ -61,12 +61,12 @@ describe("resolveIndicator", () => {
     ).toBe("after");
   });
 
-  it("uses the x axis inside horizontal-flow parents", () => {
+  it("uses the x axis when siblings flow horizontally", () => {
     const base = {
       overNodeId: "a",
       overRect: rect,
       isContainer: false,
-      parentType: "toolbar",
+      axis: "x" as const,
     };
     expect(
       resolveIndicator({ ...base, pointer: { x: 60, y: 150 } }).position,

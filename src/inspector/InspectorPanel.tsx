@@ -2,10 +2,72 @@ import { useState, type FC } from "react";
 import type { PropDef } from "../types/catalog";
 import type { ComponentNode } from "../types/spec";
 import { useSpecStore } from "../store/spec-store";
-import { findNode } from "../store/tree-utils";
+import { findNode, findParent } from "../store/tree-utils";
 import { getCatalogComponent } from "../catalog/catalog-data";
+import { GRID_COLUMNS, getSpan, isGridFlow } from "../canvas/layout";
 import { DocumentSettings } from "./DocumentSettings";
 import { IconPicker } from "./IconPicker";
+
+const WIDTH_PRESETS: { span: number; label: string }[] = [
+  { span: 3, label: "1/4" },
+  { span: 4, label: "1/3" },
+  { span: 6, label: "1/2" },
+  { span: 8, label: "2/3" },
+  { span: 9, label: "3/4" },
+  { span: 12, label: "全幅" },
+];
+
+/** Kintone-style width control: 12-column span presets + fine slider. */
+const WidthField: FC<{ node: ComponentNode }> = ({ node }) => {
+  const updateNodeById = useSpecStore((s) => s.updateNodeById);
+  const span = getSpan(node);
+
+  function setSpan(next: number): void {
+    const props: Record<string, unknown> = { ...node.props };
+    if (next >= GRID_COLUMNS) delete props.colSpan;
+    else props.colSpan = next;
+    updateNodeById(node.id, { props });
+  }
+
+  return (
+    <section>
+      <h4 className="mb-1.5 text-xs font-semibold text-slate-500">
+        幅(12カラムグリッド)
+      </h4>
+      <div className="flex gap-1">
+        {WIDTH_PRESETS.map((preset) => (
+          <button
+            key={preset.span}
+            type="button"
+            onClick={() => setSpan(preset.span)}
+            aria-pressed={span === preset.span}
+            className={`flex-1 rounded-md border px-1 py-1 text-[11px] ${
+              span === preset.span
+                ? "border-blue-500 bg-blue-50 font-medium text-blue-700"
+                : "border-slate-200 text-slate-500 hover:bg-slate-50"
+            }`}
+          >
+            {preset.label}
+          </button>
+        ))}
+      </div>
+      <div className="mt-2 flex items-center gap-2">
+        <input
+          type="range"
+          min={1}
+          max={GRID_COLUMNS}
+          value={span}
+          onChange={(e) => setSpan(Number(e.target.value))}
+          aria-label="幅(カラム数)"
+          className="flex-1 accent-blue-600"
+        />
+        <span className="w-10 text-right text-xs tabular-nums text-slate-500">
+          {span}/{GRID_COLUMNS}
+        </span>
+      </div>
+    </section>
+  );
+};
 
 interface PropFieldProps {
   def: PropDef;
@@ -75,6 +137,9 @@ const PropField: FC<PropFieldProps> = ({ def, value, onChange }) => {
 
 const NodeEditor: FC<{ node: ComponentNode }> = ({ node }) => {
   const updateNodeById = useSpecStore((s) => s.updateNodeById);
+  const parentType = useSpecStore(
+    (s) => findParent(s.document.tree, node.id)?.type ?? "root",
+  );
   const catalogDef = getCatalogComponent(node.type);
   const [showIconPicker, setShowIconPicker] = useState(false);
 
@@ -106,6 +171,8 @@ const NodeEditor: FC<{ node: ComponentNode }> = ({ node }) => {
         />
         🔒 凍結(AIに変更させない)
       </label>
+
+      {isGridFlow(parentType) && <WidthField node={node} />}
 
       {catalogDef && catalogDef.typicalProps.length > 0 && (
         <section className="flex flex-col gap-3">

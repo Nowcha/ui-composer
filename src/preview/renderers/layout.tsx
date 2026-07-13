@@ -4,7 +4,7 @@
  */
 
 import type { PreviewRenderer } from "../parts";
-import { bool, num, str } from "../parts";
+import { bool, gridSlotClass, num, str } from "../parts";
 
 const DividerPreview: PreviewRenderer = ({ node }) => {
   if (str(node.props.orientation, "horizontal") === "vertical") {
@@ -114,7 +114,7 @@ const SectionPreview: PreviewRenderer = ({ node, children }) => (
         <p className="mt-0.5 text-sm text-slate-500">{str(node.props.description)}</p>
       )}
     </div>
-    {children}
+    <div className={gridSlotClass}>{children}</div>
   </section>
 );
 

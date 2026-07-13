@@ -91,20 +91,30 @@ function displayName(node: ComponentNode): string {
   return def ? def.nameJa : node.type;
 }
 
+/** True when any node declares a colSpan (12-column grid width). */
+function usesGridSpans(node: ComponentNode): boolean {
+  if (typeof node.props?.colSpan === "number") return true;
+  return (node.children ?? []).some((child) => usesGridSpans(child));
+}
+
 /** Generates the full implementation prompt for AI coding agents. */
 export function generatePrompt(doc: SpecDocument): string {
   const sections: string[] = [];
 
   sections.push(`# UI実装指示: ${doc.meta.name}`);
-  sections.push(
-    [
-      "以下のレイアウト構造を正確に実装してください。",
-      `- 対象: ${doc.meta.mode === "ui" ? "アプリケーションUI" : "HTMLレポート"}`,
-      `- 実装方式: ${doc.meta.targetLibrary}(Tailwind CSSベース、追加UIライブラリ依存なし)`,
-      "- 構造はこの指示の階層どおりにすること。指示にないコンポーネントを追加しないこと",
-      "- 各要素に data-uic-id 属性として [id: ...] の値を付与すること",
-    ].join("\n"),
-  );
+  const headerLines = [
+    "以下のレイアウト構造を正確に実装してください。",
+    `- 対象: ${doc.meta.mode === "ui" ? "アプリケーションUI" : "HTMLレポート"}`,
+    `- 実装方式: ${doc.meta.targetLibrary}(Tailwind CSSベース、追加UIライブラリ依存なし)`,
+    "- 構造はこの指示の階層どおりにすること。指示にないコンポーネントを追加しないこと",
+    "- 各要素に data-uic-id 属性として [id: ...] の値を付与すること",
+  ];
+  if (usesGridSpans(doc.tree)) {
+    headerLines.push(
+      "- レイアウトは12カラムグリッド。プロパティ colSpan=n は横幅 n/12 を占める意味(未指定は全幅=12)。合計12以内で同じ行に収まる隣接要素は横に並べること",
+    );
+  }
+  sections.push(headerLines.join("\n"));
 
   const rulesSection = renderRulesSection(doc);
   if (rulesSection) sections.push(rulesSection);

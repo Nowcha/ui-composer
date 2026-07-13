@@ -47,16 +47,17 @@ const CONTAINER_EDGE_RATIO = 0.28;
 /**
  * Maps a pointer position over a node to a drop indicator.
  * Containers get a middle "inside" band; leaves split at the midline.
+ * `axis` is the direction siblings flow in (see layout.ts resolveAxis).
  */
 export function resolveIndicator(args: {
   overNodeId: string;
   overRect: Rect;
   pointer: Point;
   isContainer: boolean;
-  parentType: string;
+  axis: "x" | "y";
 }): DropIndicator {
-  const { overNodeId, overRect, pointer, isContainer, parentType } = args;
-  const alongX = isHorizontalFlow(parentType);
+  const { overNodeId, overRect, pointer, isContainer, axis } = args;
+  const alongX = axis === "x";
   const size = alongX ? overRect.width : overRect.height;
   const offset = alongX ? pointer.x - overRect.left : pointer.y - overRect.top;
   const ratio = size > 0 ? offset / size : 0.5;

@@ -60,6 +60,15 @@ export const Field: FC<{
   </div>
 );
 
+/**
+ * Children slot for grid-flow containers: a 12-column grid.
+ * Plain children (thumbnails, static previews) default to full rows via
+ * [&>*]:col-span-full; the canvas overrides per node with an inline
+ * gridColumn style derived from props.colSpan (see canvas/layout.ts).
+ */
+export const gridSlotClass =
+  "grid grid-cols-12 content-start gap-3 [&>*]:col-span-full";
+
 /** Shared input-box look. */
 export const inputBoxClass =
   "flex h-8 w-full items-center rounded-md border border-slate-300 bg-white px-2.5 text-sm text-slate-700";
