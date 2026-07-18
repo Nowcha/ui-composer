@@ -5,7 +5,7 @@
  */
 
 import type { PreviewRenderer } from "../parts";
-import { Chevron, bool, num, splitList, str } from "../parts";
+import { Chevron, bool, gridSlotClass, num, splitList, str } from "../parts";
 
 const SAMPLE_CELLS = ["田中 一郎", "佐藤 花子", "鈴木 次郎", "高橋 三奈", "伊藤 健"];
 const SAMPLE_STATUS = ["有効", "保留", "有効", "無効", "有効"];
@@ -22,7 +22,7 @@ const CardPreview: PreviewRenderer = ({ node, children }) => (
         </p>
       )}
     </div>
-    <div className="flex flex-col gap-3 p-4">{children}</div>
+    <div className={`${gridSlotClass} p-4`}>{children}</div>
     {bool(node.props.hasFooter) && (
       <div className="flex justify-end gap-2 border-t border-slate-100 px-4 py-2.5">
         <span className="text-xs text-slate-400">フッター</span>

@@ -25,6 +25,8 @@ export type DragPayload =
 
 interface UiState {
   isDragging: boolean;
+  /** True while a width-resize handle is being dragged. */
+  isResizing: boolean;
   dragPayload: DragPayload | null;
   dropIndicator: DropIndicator | null;
   /** Innermost hovered canvas node (mouse), for hover outlines. */
@@ -35,6 +37,7 @@ interface UiState {
 
   startDrag: (payload: DragPayload) => void;
   endDrag: () => void;
+  setResizing: (resizing: boolean) => void;
   setDropIndicator: (indicator: DropIndicator | null) => void;
   setHoveredNode: (id: string | null) => void;
   setDevice: (device: DeviceKind) => void;
@@ -44,6 +47,7 @@ interface UiState {
 
 export const useUiStore = create<UiState>((set, get) => ({
   isDragging: false,
+  isResizing: false,
   dragPayload: null,
   dropIndicator: null,
   hoveredNodeId: null,
@@ -56,6 +60,8 @@ export const useUiStore = create<UiState>((set, get) => ({
 
   endDrag: () =>
     set({ isDragging: false, dragPayload: null, dropIndicator: null }),
+
+  setResizing: (isResizing) => set({ isResizing }),
 
   setDropIndicator: (indicator) => {
     const current = get().dropIndicator;

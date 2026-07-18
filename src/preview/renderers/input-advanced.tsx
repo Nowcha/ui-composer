@@ -10,6 +10,7 @@ import {
   Field,
   Ghost,
   bool,
+  gridSlotClass,
   inputBoxClass,
   num,
   str,
@@ -136,7 +137,7 @@ const FormPreview: PreviewRenderer = ({ node, children }) => (
       className={
         str(node.props.layout, "vertical") === "inline"
           ? "flex flex-wrap items-end gap-3"
-          : "flex flex-col gap-4"
+          : gridSlotClass
       }
     >
       {children}

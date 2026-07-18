@@ -125,11 +125,27 @@ const EmptyState: FC = () => {
   );
 };
 
+/** 12-column guides shown while dragging or resizing. */
+const GridGuides: FC = () => (
+  <div
+    aria-hidden
+    className="pointer-events-none absolute inset-0 grid grid-cols-12 gap-3 p-5"
+  >
+    {Array.from({ length: 12 }, (_, i) => (
+      <div
+        key={i}
+        className="h-full rounded-sm bg-blue-500/[0.05] ring-1 ring-inset ring-blue-400/20"
+      />
+    ))}
+  </div>
+);
+
 const Artboard: FC = () => {
   const tree = useSpecStore((s) => s.document.tree);
   const selectNode = useSpecStore((s) => s.selectNode);
   const device = useUiStore((s) => s.device);
   const zoom = useUiStore((s) => s.zoom);
+  const showGuides = useUiStore((s) => s.isDragging || s.isResizing);
   const rootIndicator = useUiStore(
     (s) => s.dropIndicator?.nodeId === "root",
   );
@@ -147,20 +163,21 @@ const Artboard: FC = () => {
         <div
           ref={setNodeRef}
           onClick={() => selectNode(null)}
-          className={`flex min-h-[70vh] flex-col rounded-xl bg-white shadow-[0_2px_16px_rgba(15,23,42,0.08)] ring-1 transition-shadow ${
+          className={`relative flex min-h-[70vh] flex-col rounded-xl bg-white shadow-[0_2px_16px_rgba(15,23,42,0.08)] ring-1 transition-shadow ${
             rootIndicator ? "ring-2 ring-blue-400" : "ring-slate-200/60"
           }`}
           style={{ width }}
         >
+          {showGuides && <GridGuides />}
           {children.length === 0 ? (
             <EmptyState />
           ) : (
-            <div className="flex flex-1 flex-col gap-1 p-5">
+            <div className="relative grid flex-1 auto-rows-min grid-cols-12 content-start gap-3 p-5">
               {children.map((child) => (
                 <CanvasNode key={child.id} node={child} parentType="root" />
               ))}
               {rootIndicator && (
-                <div className="h-1 w-full rounded-full bg-blue-500 shadow-[0_0_6px_rgba(59,130,246,0.7)]" />
+                <div className="col-span-full h-1 w-full rounded-full bg-blue-500 shadow-[0_0_6px_rgba(59,130,246,0.7)]" />
               )}
             </div>
           )}

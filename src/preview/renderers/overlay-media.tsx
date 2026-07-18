@@ -5,7 +5,15 @@
  */
 
 import type { PreviewRenderer } from "../parts";
-import { Chevron, PhotoPlaceholder, bool, num, splitList, str } from "../parts";
+import {
+  Chevron,
+  PhotoPlaceholder,
+  bool,
+  gridSlotClass,
+  num,
+  splitList,
+  str,
+} from "../parts";
 
 const MODAL_WIDTHS: Record<string, string> = {
   sm: "max-w-xs",
@@ -31,7 +39,7 @@ const ModalPreview: PreviewRenderer = ({ node, children }) => (
           </span>
         )}
       </div>
-      <div className="flex flex-col gap-3 p-4">{children}</div>
+      <div className={`${gridSlotClass} p-4`}>{children}</div>
     </div>
   </div>
 );

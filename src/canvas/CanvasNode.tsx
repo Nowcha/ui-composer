@@ -7,7 +7,7 @@
  * pointer events so the innermost element under the cursor wins.
  */
 
-import type { FC } from "react";
+import { useState, type FC } from "react";
 import { useDraggable, useDroppable } from "@dnd-kit/core";
 import type { ComponentNode } from "../types/spec";
 import { useSpecStore } from "../store/spec-store";
@@ -15,6 +15,8 @@ import { useUiStore } from "../store/ui-store";
 import { getCatalogComponent, isContainerType } from "../catalog/catalog-data";
 import { NodeRenderer } from "../preview/NodeRenderer";
 import { isHorizontalFlow } from "./drop-resolver";
+import { getSpan, isGridFlow, resolveAxis, spanGridStyle } from "./layout";
+import { ResizeHandle } from "./ResizeHandle";
 
 /** Insertion line shown while dragging (before/after the hovered node). */
 const InsertLine: FC<{ edge: "before" | "after"; horizontal: boolean }> = ({
@@ -96,10 +98,16 @@ export const CanvasNode: FC<CanvasNodeProps> = ({ node, parentType }) => {
   const indicator = useUiStore((s) =>
     s.dropIndicator?.nodeId === node.id ? s.dropIndicator : null,
   );
+  /** Preview span while the resize handle is being dragged. */
+  const [liveSpan, setLiveSpan] = useState<number | null>(null);
 
   const isContainer = isContainerType(node.type);
   const children = node.children ?? [];
   const horizontal = isHorizontalFlow(parentType);
+  const inGrid = isGridFlow(parentType);
+  const span = liveSpan ?? getSpan(node);
+  /** Direction siblings flow in — insert lines run across it. */
+  const lineAxisX = resolveAxis(parentType, getSpan(node)) === "x";
 
   const {
     attributes,
@@ -140,19 +148,27 @@ export const CanvasNode: FC<CanvasNodeProps> = ({ node, parentType }) => {
       onMouseLeave={() => {
         if (isHovered) setHoveredNode(null);
       }}
+      style={inGrid ? spanGridStyle(span) : undefined}
       className={`pointer-events-auto relative cursor-grab rounded-sm outline-offset-1 focus-visible:outline-none ${
         horizontal ? "max-w-full" : "w-full"
       } ${outline} ${isThisDragging ? "opacity-30" : ""} ${
         indicator?.position === "inside" ? "bg-blue-50/40" : ""
-      }`}
+      } ${liveSpan !== null ? "outline outline-2 outline-blue-500" : ""}`}
     >
       {indicator?.position === "before" && (
-        <InsertLine edge="before" horizontal={horizontal} />
+        <InsertLine edge="before" horizontal={lineAxisX} />
       )}
       {indicator?.position === "after" && (
-        <InsertLine edge="after" horizontal={horizontal} />
+        <InsertLine edge="after" horizontal={lineAxisX} />
       )}
       {isSelected && !isDraggingAny && <SelectionToolbar node={node} />}
+      {isSelected && !isDraggingAny && inGrid && (
+        <ResizeHandle
+          node={node}
+          liveSpan={liveSpan}
+          onLiveSpanChange={setLiveSpan}
+        />
+      )}
       <div className="pointer-events-none">
         <NodeRenderer node={node}>
           {isContainer &&
