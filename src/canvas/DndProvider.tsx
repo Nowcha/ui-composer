@@ -8,7 +8,7 @@
  * mirrored into ui-store so CanvasNode can draw insertion lines live.
  */
 
-import { useRef, type FC, type ReactNode } from "react";
+import type { FC, ReactNode } from "react";
 import {
   DndContext,
   DragOverlay,
@@ -76,9 +76,37 @@ export function buildDropNode(payload: DragPayload): ComponentNode | null {
   return null;
 }
 
-export const DndProvider: FC<{ children: ReactNode }> = ({ children }) => {
-  const pointerRef = useRef<{ x: number; y: number }>({ x: 0, y: 0 });
+/**
+ * Resolves the drop indicator for a hovered droppable at a pointer position.
+ * Shared by drag-move (live insertion line) and drag-end: dnd-kit's `over`
+ * in onDragMove lags one event behind the pointer, so drag-end must
+ * recompute from its own (fresh) `event.over` instead of trusting the
+ * last indicator mirrored into ui-store.
+ */
+function indicatorFor(
+  overId: string,
+  overRect: { top: number; left: number; width: number; height: number },
+  pointer: { x: number; y: number },
+): ReturnType<typeof resolveIndicator> {
+  if (overId === ROOT_DROP_ID) {
+    return { nodeId: "root", position: "inside" };
+  }
+  const tree = useSpecStore.getState().document.tree;
+  const parent = findParent(tree, overId);
+  const overNode = findNode(tree, overId);
+  return resolveIndicator({
+    overNodeId: overId,
+    overRect,
+    pointer,
+    isContainer: isContainerType(overNode?.type ?? ""),
+    axis: resolveAxis(
+      parent?.type ?? "root",
+      overNode ? getSpan(overNode) : 12,
+    ),
+  });
+}
 
+export const DndProvider: FC<{ children: ReactNode }> = ({ children }) => {
   // 6px activation distance keeps plain clicks (select) working on canvas
   const sensors = useSensors(
     useSensor(PointerSensor, { activationConstraint: { distance: 6 } }),
@@ -118,11 +146,6 @@ export const DndProvider: FC<{ children: ReactNode }> = ({ children }) => {
   };
 
   function handleDragStart(event: DragStartEvent): void {
-    const activator = event.activatorEvent as Partial<PointerEvent>;
-    pointerRef.current = {
-      x: activator.clientX ?? 0,
-      y: activator.clientY ?? 0,
-    };
     useUiStore.getState().startDrag(payloadFromDragId(String(event.active.id)));
   }
 
@@ -132,42 +155,32 @@ export const DndProvider: FC<{ children: ReactNode }> = ({ children }) => {
       x: (activator.clientX ?? 0) + event.delta.x,
       y: (activator.clientY ?? 0) + event.delta.y,
     };
-    pointerRef.current = pointer;
-
     const ui = useUiStore.getState();
     const over = event.over;
     if (!over) {
       ui.setDropIndicator(null);
       return;
     }
-    const overId = String(over.id);
-    if (overId === ROOT_DROP_ID) {
-      ui.setDropIndicator({ nodeId: "root", position: "inside" });
-      return;
-    }
-    const tree = useSpecStore.getState().document.tree;
-    const parent = findParent(tree, overId);
-    const overNode = findNode(tree, overId);
-    ui.setDropIndicator(
-      resolveIndicator({
-        overNodeId: overId,
-        overRect: over.rect,
-        pointer,
-        isContainer: isContainerType(overNode?.type ?? ""),
-        axis: resolveAxis(
-          parent?.type ?? "root",
-          overNode ? getSpan(overNode) : 12,
-        ),
-      }),
-    );
+    ui.setDropIndicator(indicatorFor(String(over.id), over.rect, pointer));
   }
 
   function handleDragEnd(event: DragEndEvent): void {
     const ui = useUiStore.getState();
-    const indicator = ui.dropIndicator;
     const payload = ui.dragPayload;
     ui.endDrag();
-    if (!indicator || !payload || !event.over) return;
+    if (!payload || !event.over) return;
+
+    // Recompute from the fresh drag-end `over` + release position; the
+    // indicator mirrored during drag-move lags one pointer event behind.
+    const activator = event.activatorEvent as Partial<PointerEvent>;
+    const pointer = {
+      x: (activator.clientX ?? 0) + event.delta.x,
+      y: (activator.clientY ?? 0) + event.delta.y,
+    };
+    const indicator = event.over.rect
+      ? indicatorFor(String(event.over.id), event.over.rect, pointer)
+      : ui.dropIndicator;
+    if (!indicator) return;
 
     const state = useSpecStore.getState();
     const insertion: Insertion | null = indicatorToInsertion(
