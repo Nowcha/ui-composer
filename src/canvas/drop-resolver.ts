@@ -77,6 +77,52 @@ export function resolveIndicator(args: {
   };
 }
 
+/** Max distance (px) from a cell at which a gap drop snaps to that cell. */
+export const GAP_SNAP_TOLERANCE = 16;
+
+export interface RectEntry {
+  id: string;
+  rect: Rect;
+}
+
+/**
+ * Finds the nearest rect within `tolerance` px of a pointer that hit no
+ * droppable directly — e.g. released in the 12px gap between grid cells,
+ * where only the artboard itself registers. Distance is how far the
+ * pointer sits outside the rect per axis; nearest wins, ties broken by
+ * smaller area (innermost cell).
+ */
+export function nearestRectId(
+  pointer: Point,
+  entries: RectEntry[],
+  tolerance: number = GAP_SNAP_TOLERANCE,
+): string | null {
+  let best: { id: string; distance: number; area: number } | null = null;
+  for (const { id, rect } of entries) {
+    const dx = Math.max(
+      rect.left - pointer.x,
+      pointer.x - (rect.left + rect.width),
+      0,
+    );
+    const dy = Math.max(
+      rect.top - pointer.y,
+      pointer.y - (rect.top + rect.height),
+      0,
+    );
+    const distance = Math.max(dx, dy);
+    if (distance > tolerance) continue;
+    const area = rect.width * rect.height;
+    if (
+      !best ||
+      distance < best.distance ||
+      (distance === best.distance && area < best.area)
+    ) {
+      best = { id, distance, area };
+    }
+  }
+  return best?.id ?? null;
+}
+
 export interface Insertion {
   parentId: string;
   index: number;

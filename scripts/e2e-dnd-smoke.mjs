@@ -85,6 +85,20 @@ const scenarios = [
     target: (b) => ({ x: b.tag.x + b.tag.width / 2, y: b.tag.y + 4 }),
     expectIndex: 2,
   },
+  {
+    // Release in the 12px gap between the two cells: gap-snap resolves
+    // to the nearest cell instead of appending at the artboard end
+    name: "drop in the gap between inputs -> between inputs",
+    fast: false,
+    target: (b) => ({ x: b.input1.x - 4, y: b.input1.y + b.input1.height / 2 }),
+    expectIndex: 1,
+  },
+  {
+    name: "drop far below all cells -> appended at the end",
+    fast: false,
+    target: (b) => ({ x: b.tag.x + b.tag.width / 2, y: b.tag.y + b.tag.height + 80 }),
+    expectIndex: 3,
+  },
 ];
 
 async function measureBoxes(page) {

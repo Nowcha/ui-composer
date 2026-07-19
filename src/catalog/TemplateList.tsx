@@ -32,11 +32,11 @@ const TemplateCard: FC<{ template: ScreenTemplate }> = ({ template }) => {
         onClick={handleApply}
         className="group w-full overflow-hidden rounded-xl border border-slate-200 bg-white text-left shadow-sm transition-all hover:-translate-y-0.5 hover:border-blue-300 hover:shadow-md focus-visible:border-blue-400 focus-visible:outline-none"
       >
-        <div className="pointer-events-none relative h-36 overflow-hidden bg-slate-50">
+        <div className="pointer-events-none relative h-36 overflow-hidden bg-slate-50 [&_*]:[animation-play-state:paused]">
           <div className="w-[640px] origin-top-left scale-[0.38] p-4">
-            <div className="flex flex-col gap-3">
+            <div className="grid grid-cols-12 content-start gap-3">
               {template.nodes.map((node) => (
-                <StaticNodeView key={node.id} node={node} />
+                <StaticNodeView key={node.id} node={node} parentType="root" />
               ))}
             </div>
           </div>

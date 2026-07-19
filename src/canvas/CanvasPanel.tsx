@@ -165,7 +165,7 @@ const Artboard: FC = () => {
           onClick={() => selectNode(null)}
           className={`relative flex min-h-[70vh] flex-col rounded-xl bg-white shadow-[0_2px_16px_rgba(15,23,42,0.08)] ring-1 transition-shadow ${
             rootIndicator ? "ring-2 ring-blue-400" : "ring-slate-200/60"
-          }`}
+          } ${showGuides ? "uic-guides-active" : ""}`}
           style={{ width }}
         >
           {showGuides && <GridGuides />}

@@ -4,6 +4,7 @@ import {
   adjustInsertionForMove,
   indicatorToInsertion,
   isHorizontalFlow,
+  nearestRectId,
   resolveIndicator,
 } from "./drop-resolver";
 
@@ -129,5 +130,41 @@ describe("adjustInsertionForMove", () => {
     expect(
       adjustInsertionForMove(tree(), "card1", { parentId: "card1", index: 0 }),
     ).toBeNull();
+  });
+});
+
+describe("nearestRectId", () => {
+  // Two span-6 cells side by side with a 12px gap, next row below
+  const cells = [
+    { id: "left", rect: { top: 0, left: 0, width: 100, height: 40 } },
+    { id: "right", rect: { top: 0, left: 112, width: 100, height: 40 } },
+    { id: "below", rect: { top: 52, left: 0, width: 212, height: 40 } },
+  ];
+
+  it("snaps a pointer in the horizontal gap to the nearest cell", () => {
+    expect(nearestRectId({ x: 104, y: 20 }, cells, 16)).toBe("left");
+    expect(nearestRectId({ x: 109, y: 20 }, cells, 16)).toBe("right");
+  });
+
+  it("snaps a pointer in the vertical gap to the nearest row", () => {
+    expect(nearestRectId({ x: 50, y: 44 }, cells, 16)).toBe("left");
+    expect(nearestRectId({ x: 50, y: 49 }, cells, 16)).toBe("below");
+  });
+
+  it("returns null when nothing is within tolerance", () => {
+    expect(nearestRectId({ x: 400, y: 20 }, cells, 16)).toBeNull();
+    expect(nearestRectId({ x: 50, y: 200 }, cells, 16)).toBeNull();
+  });
+
+  it("prefers the smaller rect on equal distance", () => {
+    const nested = [
+      { id: "outer", rect: { top: 0, left: 0, width: 300, height: 300 } },
+      { id: "inner", rect: { top: 10, left: 10, width: 50, height: 50 } },
+    ];
+    expect(nearestRectId({ x: 20, y: 20 }, nested, 16)).toBe("inner");
+  });
+
+  it("returns null for an empty entry list", () => {
+    expect(nearestRectId({ x: 0, y: 0 }, [], 16)).toBeNull();
   });
 });
