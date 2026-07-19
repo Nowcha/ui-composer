@@ -33,6 +33,7 @@ import type { ComponentNode } from "../types/spec";
 import {
   adjustInsertionForMove,
   indicatorToInsertion,
+  nearestRectId,
   resolveIndicator,
   type Insertion,
 } from "./drop-resolver";
@@ -112,11 +113,13 @@ export const DndProvider: FC<{ children: ReactNode }> = ({ children }) => {
     useSensor(PointerSensor, { activationConstraint: { distance: 6 } }),
   );
 
-  /** pointerWithin, minus the dragged subtree, innermost (smallest) first. */
+  /**
+   * pointerWithin, minus the dragged subtree, innermost (smallest) first.
+   * When the pointer only hits the artboard (grid gaps, padding), it
+   * snaps to the nearest cell within GAP_SNAP_TOLERANCE so releases
+   * between two cells insert between them instead of appending at the end.
+   */
   const collisionDetection: CollisionDetection = (args) => {
-    const collisions = pointerWithin(args);
-    if (collisions.length === 0) return collisions;
-
     const activeId = String(args.active.id);
     const movingNodeId =
       parsePaletteDragId(activeId) || parseIconDragId(activeId)
@@ -124,17 +127,20 @@ export const DndProvider: FC<{ children: ReactNode }> = ({ children }) => {
         : activeId;
     const tree = useSpecStore.getState().document.tree;
 
-    const eligible = collisions.filter((collision) => {
-      const overId = String(collision.id);
-      if (overId === ROOT_DROP_ID) return true;
+    // Excludes the dragged node and its own subtree (can't drop into itself)
+    const isEligible = (overId: string): boolean => {
       if (!movingNodeId) return true;
       if (overId === movingNodeId) return false;
-      // Exclude the dragged node's own subtree (can't drop into itself)
       const subtree = findNode(tree, movingNodeId);
       return !(subtree && findNode(subtree, overId));
+    };
+
+    const eligible = pointerWithin(args).filter((collision) => {
+      const overId = String(collision.id);
+      return overId === ROOT_DROP_ID || isEligible(overId);
     });
 
-    return eligible.sort((a, b) => {
+    const sorted = eligible.sort((a, b) => {
       if (String(a.id) === ROOT_DROP_ID) return 1;
       if (String(b.id) === ROOT_DROP_ID) return -1;
       const rectA = args.droppableRects.get(a.id);
@@ -143,6 +149,20 @@ export const DndProvider: FC<{ children: ReactNode }> = ({ children }) => {
       const areaB = rectB ? rectB.width * rectB.height : Infinity;
       return areaA - areaB;
     });
+
+    const hitsOnlyRoot =
+      sorted.length === 0 || String(sorted[0]?.id) === ROOT_DROP_ID;
+    if (hitsOnlyRoot && args.pointerCoordinates) {
+      const entries = [];
+      for (const [id, rect] of args.droppableRects) {
+        const idStr = String(id);
+        if (idStr === ROOT_DROP_ID || !isEligible(idStr)) continue;
+        entries.push({ id: idStr, rect });
+      }
+      const snapped = nearestRectId(args.pointerCoordinates, entries);
+      if (snapped) return [{ id: snapped }, ...sorted];
+    }
+    return sorted;
   };
 
   function handleDragStart(event: DragStartEvent): void {

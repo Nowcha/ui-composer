@@ -63,9 +63,13 @@ export const screenTemplates: ScreenTemplate[] = [
       n("header", { title: "設定", sticky: true }),
       n("tabs", { tabs: "プロフィール, 通知, セキュリティ" }, [
         n("form", { title: "プロフィール", submitLabel: "保存" }, [
-          n("text-input", { label: "表示名", required: true }),
+          n("text-input", { label: "表示名", required: true, colSpan: 6 }),
+          n("switch", {
+            label: "プロフィールを公開する",
+            checked: true,
+            colSpan: 6,
+          }),
           n("textarea", { label: "自己紹介", rows: 3 }),
-          n("switch", { label: "プロフィールを公開する", checked: true }),
         ]),
       ]),
     ],
@@ -110,15 +114,16 @@ export const screenTemplates: ScreenTemplate[] = [
         rowCount: 8,
         sortable: true,
         selectable: true,
+        colSpan: 7,
       }, undefined, "行クリックで詳細カードに内容を表示"),
-      n("pagination", { totalPages: 10 }),
-      n("card", { title: "顧客詳細" }, [
+      n("card", { title: "顧客詳細", colSpan: 5 }, [
         n("description-list", {
           items: "氏名: 山田太郎, 会社: 株式会社アオバ製作所, 部署: 営業部, ステータス: 承認済み",
-          layout: "horizontal",
+          layout: "vertical",
         }),
         n("button-group", { buttons: "編集, 複製, 削除", selectionMode: "none" }),
       ]),
+      n("pagination", { totalPages: 10, colSpan: 7 }),
     ],
   },
   {
@@ -128,10 +133,23 @@ export const screenTemplates: ScreenTemplate[] = [
     nodes: [
       n("stepper", { steps: "基本情報, 詳細入力, 確認, 完了", currentStep: 1 }),
       n("form", { title: "基本情報", submitLabel: "次へ", showCancel: true }, [
-        n("text-input", { label: "氏名", required: true }),
-        n("text-input", { label: "メールアドレス", inputType: "email", required: true }),
-        n("select", { label: "お問い合わせ種別", options: "見積依頼, 資料請求, その他" }),
-        n("radio-button", { label: "希望連絡方法", options: "メール, 電話" }),
+        n("text-input", { label: "氏名", required: true, colSpan: 6 }),
+        n("text-input", {
+          label: "メールアドレス",
+          inputType: "email",
+          required: true,
+          colSpan: 6,
+        }),
+        n("select", {
+          label: "お問い合わせ種別",
+          options: "見積依頼, 資料請求, その他",
+          colSpan: 6,
+        }),
+        n("radio-button", {
+          label: "希望連絡方法",
+          options: "メール, 電話",
+          colSpan: 6,
+        }),
       ], "「次へ」で入力検証し、エラーがなければステップ2へ進む"),
     ],
   },

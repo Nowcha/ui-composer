@@ -67,7 +67,7 @@ export const Field: FC<{
  * gridColumn style derived from props.colSpan (see canvas/layout.ts).
  */
 export const gridSlotClass =
-  "grid grid-cols-12 content-start gap-3 [&>*]:col-span-full";
+  "uic-grid-slot grid grid-cols-12 content-start gap-3 [&>*]:col-span-full";
 
 /** Shared input-box look. */
 export const inputBoxClass =

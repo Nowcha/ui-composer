@@ -9,3 +9,22 @@
     system-ui,
     sans-serif;
 }
+
+/*
+ * 12-column guides inside grid-flow containers (card/form/section/...),
+ * shown only while dragging or resizing. `.uic-guides-active` is set on
+ * the artboard (CanvasPanel); `.uic-grid-slot` marks each container's
+ * children slot (preview/parts.tsx gridSlotClass). Column period =
+ * (100% - 11 gaps of 12px) / 12 + one 12px gap; background-clip keeps
+ * the stripes inside the slot's content box so padding stays clean.
+ */
+.uic-guides-active .uic-grid-slot {
+  background-image: repeating-linear-gradient(
+    to right,
+    rgb(59 130 246 / 0.06) 0,
+    rgb(59 130 246 / 0.06) calc((100% - 132px) / 12),
+    transparent calc((100% - 132px) / 12),
+    transparent calc((100% - 132px) / 12 + 12px)
+  );
+  background-clip: content-box;
+}

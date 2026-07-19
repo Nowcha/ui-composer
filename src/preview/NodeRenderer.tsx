@@ -9,6 +9,7 @@
 import type { FC, ReactNode } from "react";
 import type { ComponentNode } from "../types/spec";
 import { RAW_BLOCK_TYPE } from "../types/spec";
+import { getSpan, isGridFlow, spanGridStyle } from "../canvas/layout";
 import type { PreviewRenderer } from "./parts";
 import { actionRenderers } from "./renderers/action";
 import { inputBasicRenderers } from "./renderers/input-basic";
@@ -65,11 +66,25 @@ export const NodeRenderer: FC<NodeRendererProps> = ({ node, children }) => {
   return <Renderer node={node}>{children}</Renderer>;
 };
 
-/** Recursive static render (thumbnails, drag overlays, template previews). */
-export const StaticNodeView: FC<{ node: ComponentNode }> = ({ node }) => (
-  <NodeRenderer node={node}>
-    {node.children?.map((child) => (
-      <StaticNodeView key={child.id} node={child} />
-    ))}
-  </NodeRenderer>
-);
+/**
+ * Recursive static render (thumbnails, drag overlays, template previews).
+ * When `parentType` is a grid-flow container, the node is wrapped in a
+ * span-sized grid slot so static previews mirror the canvas layout
+ * (on canvas, CanvasNode applies the same style itself).
+ */
+export const StaticNodeView: FC<{
+  node: ComponentNode;
+  parentType?: string;
+}> = ({ node, parentType }) => {
+  const view = (
+    <NodeRenderer node={node}>
+      {node.children?.map((child) => (
+        <StaticNodeView key={child.id} node={child} parentType={node.type} />
+      ))}
+    </NodeRenderer>
+  );
+  if (parentType && isGridFlow(parentType)) {
+    return <div style={spanGridStyle(getSpan(node))}>{view}</div>;
+  }
+  return view;
+};

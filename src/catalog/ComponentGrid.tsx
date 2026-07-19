@@ -41,7 +41,7 @@ const Thumbnail: FC<{ component: CatalogComponent }> = ({ component }) => {
     [component],
   );
   return (
-    <div className="pointer-events-none flex h-[76px] items-center justify-center overflow-hidden rounded-t-lg bg-gradient-to-b from-slate-50 to-slate-100/60">
+    <div className="pointer-events-none flex h-[76px] items-center justify-center overflow-hidden rounded-t-lg bg-gradient-to-b from-slate-50 to-slate-100/60 [&_*]:[animation-play-state:paused]">
       <div className="flex w-[240px] shrink-0 origin-center scale-[0.58] justify-center">
         <NodeRenderer node={sampleNode}>
           {component.isContainer ? <SampleLines lines={2} /> : undefined}
