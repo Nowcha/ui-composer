@@ -8,6 +8,7 @@ import { CanvasPanel } from "./canvas/CanvasPanel";
 import { InspectorPanel } from "./inspector/InspectorPanel";
 import { OutputDialog } from "./output/OutputDialog";
 import { FlowDialog } from "./flow/FlowDialog";
+import { CommandPalette } from "./palette/CommandPalette";
 import { DndProvider } from "./canvas/DndProvider";
 
 function isEditableTarget(target: EventTarget | null): boolean {
@@ -41,6 +42,7 @@ const HeaderButton: FC<{
 const App: FC = () => {
   const [showOutput, setShowOutput] = useState(false);
   const [showFlow, setShowFlow] = useState(false);
+  const [showPalette, setShowPalette] = useState(false);
   const mode = useSpecStore((s) => s.document.meta.mode);
   const name = useSpecStore((s) => s.document.meta.name);
   const setMode = useSpecStore((s) => s.setMode);
@@ -100,8 +102,13 @@ const App: FC = () => {
 
   useEffect(() => {
     function handleKeyDown(e: KeyboardEvent): void {
-      if (isEditableTarget(e.target)) return;
       const isMod = e.metaKey || e.ctrlKey;
+      if (isMod && e.key.toLowerCase() === "k") {
+        e.preventDefault();
+        setShowPalette(true);
+        return;
+      }
+      if (isEditableTarget(e.target)) return;
       const state = useSpecStore.getState();
 
       if (isMod && e.key.toLowerCase() === "z") {
@@ -203,6 +210,12 @@ const App: FC = () => {
           >
             遷移図
           </HeaderButton>
+          <HeaderButton
+            onClick={() => setShowPalette(true)}
+            title="パーツを検索して即配置(Ctrl+K / ⌘K)"
+          >
+            🔍 Ctrl+K
+          </HeaderButton>
           <input
             ref={fileInputRef}
             type="file"
@@ -226,6 +239,9 @@ const App: FC = () => {
       </header>
       {showOutput && <OutputDialog onClose={() => setShowOutput(false)} />}
       {showFlow && <FlowDialog onClose={() => setShowFlow(false)} />}
+      {showPalette && (
+        <CommandPalette onClose={() => setShowPalette(false)} />
+      )}
       <DndProvider>
         <div className="flex min-h-0 flex-1">
           <CatalogPanel />

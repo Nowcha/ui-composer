@@ -11,24 +11,14 @@ import type { CatalogComponent, Category } from "../types/catalog";
 import { CATEGORY_LABELS_JA } from "../types/catalog";
 import { paletteDragId } from "../canvas/dnd-ids";
 import { createNodeId, useSpecStore } from "../store/spec-store";
-import { findNode } from "../store/tree-utils";
 import { NodeRenderer } from "../preview/NodeRenderer";
 import { SampleLines } from "../preview/parts";
 import {
   buildDefaultProps,
   componentsForMode,
-  isContainerType,
+  matchesComponentQuery,
+  resolveQuickAddParentId,
 } from "./catalog-data";
-
-function matches(component: CatalogComponent, query: string): boolean {
-  const q = query.toLowerCase();
-  return (
-    component.name.toLowerCase().includes(q) ||
-    component.nameJa.includes(query) ||
-    component.id.includes(q) ||
-    component.aliases.some((a) => a.toLowerCase().includes(q))
-  );
-}
 
 /** Static thumbnail: the real renderer scaled down into a fixed frame. */
 const Thumbnail: FC<{ component: CatalogComponent }> = ({ component }) => {
@@ -98,7 +88,7 @@ export const ComponentGrid: FC = () => {
   const grouped = useMemo(() => {
     const forMode = componentsForMode(mode);
     const filtered = query.trim()
-      ? forMode.filter((c) => matches(c, query.trim()))
+      ? forMode.filter((c) => matchesComponentQuery(c, query.trim()))
       : forMode;
     const groups = new Map<Category, CatalogComponent[]>();
     for (const c of filtered) {
@@ -109,11 +99,7 @@ export const ComponentGrid: FC = () => {
   }, [query, mode]);
 
   function handleQuickAdd(component: CatalogComponent): void {
-    const selected = selectedNodeId
-      ? findNode(tree, selectedNodeId)
-      : undefined;
-    const parentId =
-      selected && isContainerType(selected.type) ? selected.id : "root";
+    const parentId = resolveQuickAddParentId(tree, selectedNodeId);
     addNode(parentId, {
       id: createNodeId(component.id),
       type: component.id,

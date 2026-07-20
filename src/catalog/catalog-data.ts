@@ -8,6 +8,7 @@ import componentsJson from "../data/components.json";
 import type { CatalogComponent } from "../types/catalog";
 import type { ComponentNode, ComposerMode } from "../types/spec";
 import { RAW_BLOCK_TYPE, ROOT_NODE_TYPE } from "../types/spec";
+import { findNode } from "../store/tree-utils";
 
 export const catalogComponents =
   componentsJson as unknown as CatalogComponent[];
@@ -25,6 +26,33 @@ export function getCatalogComponent(
   id: string,
 ): CatalogComponent | undefined {
   return byId.get(id);
+}
+
+/** Substring match against name / nameJa / id / aliases (search + palette). */
+export function matchesComponentQuery(
+  component: CatalogComponent,
+  query: string,
+): boolean {
+  const q = query.toLowerCase();
+  return (
+    component.name.toLowerCase().includes(q) ||
+    component.nameJa.includes(query) ||
+    component.id.includes(q) ||
+    component.aliases.some((a) => a.toLowerCase().includes(q))
+  );
+}
+
+/**
+ * Where a quick-added component should land: inside the selected node
+ * when it's a container, otherwise appended to the document root.
+ * Shared by the catalog's double-click-to-add and the command palette.
+ */
+export function resolveQuickAddParentId(
+  tree: ComponentNode,
+  selectedNodeId: string | null,
+): string {
+  const selected = selectedNodeId ? findNode(tree, selectedNodeId) : undefined;
+  return selected && isContainerType(selected.type) ? selected.id : tree.id;
 }
 
 /** True when a node of this type can contain children. */
