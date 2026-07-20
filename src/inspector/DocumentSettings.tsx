@@ -7,6 +7,14 @@ import {
 import { lintTree } from "../lint/a11y";
 import { nodeLabel } from "../catalog/catalog-data";
 import { findNode } from "../store/tree-utils";
+import type { DesignTokens } from "../types/spec";
+
+const BORDER_RADIUS_PRESETS = ["0", "0.25rem", "0.5rem", "0.75rem", "9999px"];
+const FONT_FAMILY_PRESETS = [
+  "Noto Sans JP, sans-serif",
+  "Inter, sans-serif",
+  "system-ui, sans-serif",
+];
 
 /**
  * Shown in the inspector when no node is selected.
@@ -17,6 +25,8 @@ export const DocumentSettings: FC = () => {
   const promptRules = useSpecStore((s) => s.document.meta.promptRules);
   const setPromptRules = useSpecStore((s) => s.setPromptRules);
   const tree = useSpecStore((s) => s.document.tree);
+  const tokens = useSpecStore((s) => s.document.tokens);
+  const setTokens = useSpecStore((s) => s.setTokens);
   const snapshots = useSpecStore((s) => s.document.snapshots);
   const deleteSnapshot = useSpecStore((s) => s.deleteSnapshot);
   const selectNode = useSpecStore((s) => s.selectNode);
@@ -34,6 +44,10 @@ export const DocumentSettings: FC = () => {
       next.add(ruleId);
     }
     setPromptRules([...next]);
+  }
+
+  function updateToken(key: keyof DesignTokens, value: string): void {
+    setTokens({ ...tokens, [key]: value });
   }
 
   return (
@@ -68,6 +82,109 @@ export const DocumentSettings: FC = () => {
         <p className="mt-1 text-xs text-slate-400">
           検出結果はプロンプトに「実装時の注意」として自動注記されます
         </p>
+      </section>
+
+      <section>
+        <h3 className="text-sm font-semibold text-slate-800">
+          デザイントークン
+        </h3>
+        <p className="mt-0.5 text-xs leading-relaxed text-slate-500">
+          一度定義すると、プロンプト・スペック文書・生成コードのヘッダーに自動反映されます。
+        </p>
+        <div className="mt-2 flex flex-col gap-2.5">
+          <label className="flex flex-col gap-1 text-xs text-slate-600">
+            プライマリカラー
+            <span className="flex items-center gap-2">
+              <input
+                type="color"
+                value={/^#[0-9a-fA-F]{6}$/.test(tokens?.primaryColor ?? "")
+                  ? tokens?.primaryColor
+                  : "#2563eb"}
+                onChange={(e) => updateToken("primaryColor", e.target.value)}
+                aria-label="プライマリカラー(カラーピッカー)"
+                className="h-7 w-9 cursor-pointer rounded border border-slate-300"
+              />
+              <input
+                type="text"
+                value={tokens?.primaryColor ?? ""}
+                onChange={(e) => updateToken("primaryColor", e.target.value)}
+                placeholder="#2563eb"
+                aria-label="プライマリカラー(テキスト)"
+                className="w-full rounded-md border border-slate-300 px-2 py-1 text-xs focus:border-blue-500 focus:outline-none"
+              />
+            </span>
+          </label>
+
+          <label className="flex flex-col gap-1 text-xs text-slate-600">
+            角丸
+            <span className="flex flex-wrap items-center gap-1">
+              {BORDER_RADIUS_PRESETS.map((preset) => (
+                <button
+                  key={preset}
+                  type="button"
+                  onClick={() => updateToken("borderRadius", preset)}
+                  aria-pressed={tokens?.borderRadius === preset}
+                  className={`rounded-md border px-1.5 py-0.5 text-xs ${
+                    tokens?.borderRadius === preset
+                      ? "border-blue-500 bg-blue-50 text-blue-700"
+                      : "border-slate-200 text-slate-500 hover:bg-slate-50"
+                  }`}
+                >
+                  {preset}
+                </button>
+              ))}
+              <input
+                type="text"
+                value={tokens?.borderRadius ?? ""}
+                onChange={(e) => updateToken("borderRadius", e.target.value)}
+                placeholder="0.5rem"
+                aria-label="角丸(自由入力)"
+                className="w-20 rounded-md border border-slate-300 px-2 py-1 text-xs focus:border-blue-500 focus:outline-none"
+              />
+            </span>
+          </label>
+
+          <label className="flex flex-col gap-1 text-xs text-slate-600">
+            基準スペーシング
+            <input
+              type="text"
+              value={tokens?.spacingUnit ?? ""}
+              onChange={(e) => updateToken("spacingUnit", e.target.value)}
+              placeholder="4px"
+              aria-label="基準スペーシング"
+              className="w-full rounded-md border border-slate-300 px-2 py-1 text-xs focus:border-blue-500 focus:outline-none"
+            />
+          </label>
+
+          <label className="flex flex-col gap-1 text-xs text-slate-600">
+            フォント
+            <span className="flex flex-wrap items-center gap-1">
+              {FONT_FAMILY_PRESETS.map((preset) => (
+                <button
+                  key={preset}
+                  type="button"
+                  onClick={() => updateToken("fontFamily", preset)}
+                  aria-pressed={tokens?.fontFamily === preset}
+                  className={`rounded-md border px-1.5 py-0.5 text-xs ${
+                    tokens?.fontFamily === preset
+                      ? "border-blue-500 bg-blue-50 text-blue-700"
+                      : "border-slate-200 text-slate-500 hover:bg-slate-50"
+                  }`}
+                >
+                  {preset.split(",")[0]}
+                </button>
+              ))}
+            </span>
+            <input
+              type="text"
+              value={tokens?.fontFamily ?? ""}
+              onChange={(e) => updateToken("fontFamily", e.target.value)}
+              placeholder="Noto Sans JP, sans-serif"
+              aria-label="フォント(自由入力)"
+              className="w-full rounded-md border border-slate-300 px-2 py-1 text-xs focus:border-blue-500 focus:outline-none"
+            />
+          </label>
+        </div>
       </section>
 
       {snapshots.length > 0 && (
