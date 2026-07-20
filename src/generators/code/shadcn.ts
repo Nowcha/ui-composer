@@ -15,6 +15,7 @@ import {
   pascalCase,
   screenComponentName,
 } from "./emit-utils";
+import { renderTailwindConfigHint } from "../design-tokens";
 
 const { renderNode, renderChildren } = createTreeRenderer(
   SHADCN_RENDERERS,
@@ -60,6 +61,7 @@ export function generateShadcnCode(doc: SpecDocument): string {
     ...(usedModules.length > 0
       ? [`// 前提: npx shadcn@latest add ${usedModules.join(" ")}`]
       : []),
+    ...renderTailwindConfigHint(doc.tokens),
   ];
 
   const imports = [
