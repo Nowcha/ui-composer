@@ -30,6 +30,7 @@ export function parseSpecDocument(json: string): SpecDocument | null {
       meta: doc.meta,
       tree: doc.tree,
       tokens: doc.tokens,
+      flow: doc.flow,
       snapshots: Array.isArray(doc.snapshots) ? doc.snapshots : [],
     } as SpecDocument;
   } catch {

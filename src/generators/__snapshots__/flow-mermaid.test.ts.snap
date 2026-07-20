@@ -1,0 +1,10 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`generateFlowMermaid > matches snapshot 1`] = `
+"flowchart TD
+  S0["ログイン"]
+  S1["ダッシュボード"]
+  S2["設定"]
+  S0 -->|"ログインボタン クリック"| S1
+  S1 --> S2"
+`;

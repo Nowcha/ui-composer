@@ -7,6 +7,7 @@ import { CatalogPanel } from "./catalog/CatalogPanel";
 import { CanvasPanel } from "./canvas/CanvasPanel";
 import { InspectorPanel } from "./inspector/InspectorPanel";
 import { OutputDialog } from "./output/OutputDialog";
+import { FlowDialog } from "./flow/FlowDialog";
 import { DndProvider } from "./canvas/DndProvider";
 
 function isEditableTarget(target: EventTarget | null): boolean {
@@ -39,6 +40,7 @@ const HeaderButton: FC<{
 
 const App: FC = () => {
   const [showOutput, setShowOutput] = useState(false);
+  const [showFlow, setShowFlow] = useState(false);
   const mode = useSpecStore((s) => s.document.meta.mode);
   const name = useSpecStore((s) => s.document.meta.name);
   const setMode = useSpecStore((s) => s.setMode);
@@ -195,6 +197,12 @@ const App: FC = () => {
           >
             共有
           </HeaderButton>
+          <HeaderButton
+            onClick={() => setShowFlow(true)}
+            title="画面遷移図を編集(Mermaidとして出力に自動挿入)"
+          >
+            遷移図
+          </HeaderButton>
           <input
             ref={fileInputRef}
             type="file"
@@ -217,6 +225,7 @@ const App: FC = () => {
         </div>
       </header>
       {showOutput && <OutputDialog onClose={() => setShowOutput(false)} />}
+      {showFlow && <FlowDialog onClose={() => setShowFlow(false)} />}
       <DndProvider>
         <div className="flex min-h-0 flex-1">
           <CatalogPanel />

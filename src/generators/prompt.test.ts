@@ -143,6 +143,23 @@ describe("generatePrompt", () => {
     expect(output).not.toContain("## 変更禁止");
   });
 
+  test("embeds the Mermaid flow section only when a flow exists", () => {
+    expect(generatePrompt(makeDocument())).not.toContain("## 画面遷移");
+
+    const doc = makeDocument();
+    doc.flow = {
+      screens: ["ログイン", "ホーム"],
+      transitions: [
+        { id: "t1", from: "ログイン", to: "ホーム", trigger: "ログイン成功" },
+      ],
+    };
+    const output = generatePrompt(doc);
+    expect(output).toContain("## 画面遷移");
+    expect(output).toContain("```mermaid");
+    expect(output).toContain('S0 -->|"ログイン成功"| S1');
+    expect(output).toContain("図にない画面・遷移を追加しないこと");
+  });
+
   test("explains 12-column grid semantics only when colSpan is used", () => {
     // default fixture has no colSpan — no grid note
     expect(generatePrompt(makeDocument())).not.toContain("12カラムグリッド");
