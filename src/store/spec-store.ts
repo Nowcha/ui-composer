@@ -14,6 +14,7 @@ import { create } from "zustand";
 import type {
   ComponentNode,
   ComposerMode,
+  DesignTokens,
   ScreenFlow,
   SnapshotRef,
   SpecDocument,
@@ -66,6 +67,7 @@ interface SpecState {
   setDocumentName: (name: string) => void;
   setTargetLibrary: (targetLibrary: string) => void;
   setFlow: (flow: ScreenFlow | undefined) => void;
+  setTokens: (tokens: DesignTokens | undefined) => void;
   setPromptRules: (ruleIds: string[]) => void;
   loadDocument: (doc: SpecDocument) => void;
   resetDocument: (mode?: ComposerMode) => void;
@@ -166,6 +168,11 @@ export const useSpecStore = create<SpecState>((set, get) => {
     setFlow: (flow) => {
       const { document } = get();
       set({ document: { ...document, flow } });
+    },
+
+    setTokens: (tokens) => {
+      const { document } = get();
+      set({ document: { ...document, tokens } });
     },
 
     setPromptRules: (ruleIds) => {

@@ -56,6 +56,14 @@ describe("generateSpecMarkdown", () => {
     expect(md).toContain("🔒");
   });
 
+  test("embeds the design tokens section only when a token is set", () => {
+    expect(generateSpecMarkdown(makeDoc())).not.toContain("## デザイントークン");
+
+    const doc = makeDoc();
+    doc.tokens = { borderRadius: "0.5rem" };
+    expect(generateSpecMarkdown(doc)).toContain("角丸: 0.5rem");
+  });
+
   test("embeds the Mermaid flow section only when a flow exists", () => {
     expect(generateSpecMarkdown(makeDoc())).not.toContain("## 画面遷移");
 
