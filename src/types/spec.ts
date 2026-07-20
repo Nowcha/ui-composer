@@ -64,6 +64,27 @@ export interface SnapshotRef {
   createdAt: string; // ISO 8601
 }
 
+/** One edge in the screen-flow graph ("このButton→あの画面"). */
+export interface FlowTransition {
+  id: string;
+  /** Source screen name (must appear in ScreenFlow.screens). */
+  from: string;
+  /** Destination screen name. */
+  to: string;
+  /** What triggers the transition, e.g. "ログインボタン クリック". */
+  trigger: string;
+}
+
+/**
+ * Screen-flow graph for the whole app (additional-features #6).
+ * The canvas edits one screen at a time; this graph names the screens
+ * and their transitions so prompts/specs can carry a Mermaid flowchart.
+ */
+export interface ScreenFlow {
+  screens: string[];
+  transitions: FlowTransition[];
+}
+
 /** Design tokens (Phase 2). Kept minimal until the token editor lands. */
 export interface DesignTokens {
   primaryColor?: string;
@@ -76,6 +97,7 @@ export interface SpecDocument {
   meta: SpecMeta;
   tree: ComponentNode;
   tokens?: DesignTokens;
+  flow?: ScreenFlow;
   snapshots: SnapshotRef[];
 }
 

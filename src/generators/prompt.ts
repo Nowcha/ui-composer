@@ -14,6 +14,7 @@ import {
 } from "./prompt-assets";
 import { lintTree } from "../lint/a11y";
 import { getCodeGenerator } from "./code/index";
+import { renderFlowSection } from "./flow-mermaid";
 
 const INDENT = "  ";
 
@@ -126,6 +127,13 @@ export function generatePrompt(doc: SpecDocument): string {
       treeLines.length > 0 ? treeLines.join("\n") : "(コンポーネントなし)"
     }`,
   );
+
+  const flowSection = renderFlowSection(doc.flow);
+  if (flowSection) {
+    sections.push(
+      `${flowSection}\n\n遷移はこの図のとおり実装すること。図にない画面・遷移を追加しないこと。`,
+    );
+  }
 
   const frozen = collectFrozenNodes(doc.tree);
   if (frozen.length > 0) {

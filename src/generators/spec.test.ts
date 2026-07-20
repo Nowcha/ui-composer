@@ -55,4 +55,19 @@ describe("generateSpecMarkdown", () => {
     expect(md).toContain("行クリックで詳細を表示");
     expect(md).toContain("🔒");
   });
+
+  test("embeds the Mermaid flow section only when a flow exists", () => {
+    expect(generateSpecMarkdown(makeDoc())).not.toContain("## 画面遷移");
+
+    const doc = makeDoc();
+    doc.flow = {
+      screens: ["一覧", "詳細"],
+      transitions: [
+        { id: "t1", from: "一覧", to: "詳細", trigger: "行クリック" },
+      ],
+    };
+    const md = generateSpecMarkdown(doc);
+    expect(md).toContain("## 画面遷移");
+    expect(md).toContain("```mermaid\nflowchart TD");
+  });
 });
