@@ -5,8 +5,14 @@
 
 import type { CodeGenerator } from "./types";
 import { plainTailwindGenerator } from "./plain-tailwind";
+import { shadcnGenerator } from "./shadcn";
+import { muiGenerator } from "./mui";
 
-export const codeGenerators: CodeGenerator[] = [plainTailwindGenerator];
+export const codeGenerators: CodeGenerator[] = [
+  plainTailwindGenerator,
+  shadcnGenerator,
+  muiGenerator,
+];
 
 export function getCodeGenerator(targetLibrary: string): CodeGenerator {
   return (

@@ -5,7 +5,7 @@ import { generatePrompt } from "../generators/prompt";
 import { generateDiffPrompt } from "../generators/diff-prompt";
 import { generateHtmlReport } from "../generators/html-report";
 import { generateSpecMarkdown } from "../generators/spec";
-import { getCodeGenerator } from "../generators/code/index";
+import { codeGenerators, getCodeGenerator } from "../generators/code/index";
 
 type OutputTab = "prompt" | "diff" | "spec" | "code" | "html" | "json";
 
@@ -24,6 +24,7 @@ interface OutputDialogProps {
 
 export const OutputDialog: FC<OutputDialogProps> = ({ onClose }) => {
   const document_ = useSpecStore((s) => s.document);
+  const setTargetLibrary = useSpecStore((s) => s.setTargetLibrary);
   const [tab, setTab] = useState<OutputTab>("prompt");
   const [copied, setCopied] = useState(false);
   const snapshots = document_.snapshots;
@@ -145,6 +146,20 @@ export const OutputDialog: FC<OutputDialogProps> = ({ onClose }) => {
               </button>
             ))}
           </div>
+          {tab === "code" && (
+            <select
+              value={document_.meta.targetLibrary}
+              onChange={(e) => setTargetLibrary(e.target.value)}
+              aria-label="実装方式"
+              className="rounded-md border border-slate-300 px-2 py-1 text-xs focus:border-blue-500 focus:outline-none"
+            >
+              {codeGenerators.map((g) => (
+                <option key={g.id} value={g.id}>
+                  {g.label}
+                </option>
+              ))}
+            </select>
+          )}
           {tab === "diff" && snapshots.length > 0 && (
             <select
               value={baseSnapshotId ?? ""}
