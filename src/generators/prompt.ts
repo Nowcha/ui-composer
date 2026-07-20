@@ -13,6 +13,7 @@ import {
   renderRulesSection,
 } from "./prompt-assets";
 import { lintTree } from "../lint/a11y";
+import { getCodeGenerator } from "./code/index";
 
 const INDENT = "  ";
 
@@ -105,7 +106,7 @@ export function generatePrompt(doc: SpecDocument): string {
   const headerLines = [
     "以下のレイアウト構造を正確に実装してください。",
     `- 対象: ${doc.meta.mode === "ui" ? "アプリケーションUI" : "HTMLレポート"}`,
-    `- 実装方式: ${doc.meta.targetLibrary}(Tailwind CSSベース、追加UIライブラリ依存なし)`,
+    `- 実装方式: ${doc.meta.targetLibrary}(${getCodeGenerator(doc.meta.targetLibrary).promptNote})`,
     "- 構造はこの指示の階層どおりにすること。指示にないコンポーネントを追加しないこと",
     "- 各要素に data-uic-id 属性として [id: ...] の値を付与すること",
   ];

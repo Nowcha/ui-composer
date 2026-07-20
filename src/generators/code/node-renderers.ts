@@ -6,30 +6,22 @@
 
 import type { ComponentNode } from "../../types/spec";
 import {
+  iconJsx,
   indent,
   jsxText,
   listProp,
   num,
-  pascalCase,
   str,
+  uic,
 } from "./emit-utils";
 
-type RenderChildren = (node: ComponentNode, depth: number) => string[];
+export type RenderChildren = (node: ComponentNode, depth: number) => string[];
 
 export type NodeRenderer = (
   node: ComponentNode,
   depth: number,
   children: RenderChildren,
 ) => string[];
-
-function uic(node: ComponentNode): string {
-  return `data-uic-id="${node.id}"`;
-}
-
-function iconJsx(node: ComponentNode): string {
-  if (!node.icon) return "";
-  return `<${pascalCase(node.icon.name)} size={16} weight="${node.icon.weight}" aria-hidden="true" /> `;
-}
 
 const BUTTON_VARIANTS: Record<string, string> = {
   primary: "bg-blue-600 text-white hover:bg-blue-700",

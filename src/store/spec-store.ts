@@ -63,6 +63,7 @@ interface SpecState {
   // --- document-level ---
   setMode: (mode: ComposerMode) => void;
   setDocumentName: (name: string) => void;
+  setTargetLibrary: (targetLibrary: string) => void;
   setPromptRules: (ruleIds: string[]) => void;
   loadDocument: (doc: SpecDocument) => void;
   resetDocument: (mode?: ComposerMode) => void;
@@ -151,6 +152,13 @@ export const useSpecStore = create<SpecState>((set, get) => {
     setDocumentName: (name) => {
       const { document } = get();
       set({ document: { ...document, meta: { ...document.meta, name } } });
+    },
+
+    setTargetLibrary: (targetLibrary) => {
+      const { document } = get();
+      set({
+        document: { ...document, meta: { ...document.meta, targetLibrary } },
+      });
     },
 
     setPromptRules: (ruleIds) => {

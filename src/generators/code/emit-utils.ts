@@ -37,6 +37,25 @@ export function listProp(value: unknown): string[] {
     .filter((s) => s.length > 0);
 }
 
+/** data-uic-id attribute shared by every adapter (round-trip anchor). */
+export function uic(node: ComponentNode): string {
+  return `data-uic-id="${node.id}"`;
+}
+
+/** Inline Phosphor icon JSX prefix (empty when the node has no icon). */
+export function iconJsx(node: ComponentNode): string {
+  if (!node.icon) return "";
+  return `<${pascalCase(node.icon.name)} size={16} weight="${node.icon.weight}" aria-hidden="true" /> `;
+}
+
+/** Derives the exported component name from the document name. */
+export function screenComponentName(docName: string): string {
+  const ascii = docName.replace(/[^A-Za-z0-9 _-]/g, "").trim();
+  if (!ascii) return "GeneratedScreen";
+  const pascal = pascalCase(ascii.replaceAll(" ", "-"));
+  return /^[A-Za-z]/.test(pascal) ? pascal : "GeneratedScreen";
+}
+
 /** Collects unique icon names used in the tree (for import emission). */
 export function collectIconNames(node: ComponentNode): string[] {
   const names = new Set<string>();

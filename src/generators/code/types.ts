@@ -16,5 +16,7 @@ export interface CodeGenerator {
   /** Matches SpecMeta.targetLibrary, e.g. "plain-tailwind". */
   id: string;
   label: string;
+  /** Short Japanese note appended to the 実装方式 line of generated prompts. */
+  promptNote: string;
   generate: (doc: SpecDocument) => GeneratedFile[];
 }
