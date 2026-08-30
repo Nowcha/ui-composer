@@ -160,6 +160,16 @@ describe("generatePrompt", () => {
     expect(output).toContain("図にない画面・遷移を追加しないこと");
   });
 
+  test("embeds the design tokens section only when a token is set", () => {
+    expect(generatePrompt(makeDocument())).not.toContain("## デザイントークン");
+
+    const doc = makeDocument();
+    doc.tokens = { primaryColor: "#2563eb", fontFamily: "Noto Sans JP" };
+    const output = generatePrompt(doc);
+    expect(output).toContain("## デザイントークン");
+    expect(output).toContain("プライマリカラー: #2563eb");
+  });
+
   test("explains 12-column grid semantics only when colSpan is used", () => {
     // default fixture has no colSpan — no grid note
     expect(generatePrompt(makeDocument())).not.toContain("12カラムグリッド");

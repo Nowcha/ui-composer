@@ -15,6 +15,7 @@ import {
 import { lintTree } from "../lint/a11y";
 import { getCodeGenerator } from "./code/index";
 import { renderFlowSection } from "./flow-mermaid";
+import { renderDesignTokensSection } from "./design-tokens";
 
 const INDENT = "  ";
 
@@ -120,6 +121,9 @@ export function generatePrompt(doc: SpecDocument): string {
 
   const rulesSection = renderRulesSection(doc);
   if (rulesSection) sections.push(rulesSection);
+
+  const tokensSection = renderDesignTokensSection(doc.tokens);
+  if (tokensSection) sections.push(tokensSection);
 
   const treeLines = renderTree(doc.tree, 0);
   sections.push(

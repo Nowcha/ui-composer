@@ -14,6 +14,7 @@ import {
   pascalCase,
   screenComponentName,
 } from "./emit-utils";
+import { renderMuiThemeHint } from "../design-tokens";
 
 /** Every @mui/material component any renderer may emit (scan targets). */
 const MUI_COMPONENT_NAMES = [
@@ -90,6 +91,7 @@ export function generateMuiCode(doc: SpecDocument): string {
     `// スペック名: ${doc.meta.name}`,
     "// このコードはワイヤーフレーム忠実度の出発点です。プロンプト出力と併用してください。",
     "// 前提: @mui/material @emotion/react @emotion/styled がインストール済み",
+    ...renderMuiThemeHint(doc.tokens),
   ];
 
   const imports = [

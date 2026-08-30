@@ -99,6 +99,16 @@ describe("generatePlainTailwindCode", () => {
     const code = generatePlainTailwindCode(makeDoc());
     expect(code).toContain("TODO: rating を実装");
   });
+
+  test("emits a tailwind.config hint only when design tokens are set", () => {
+    const doc = makeDoc();
+    expect(generatePlainTailwindCode(doc)).not.toContain("tailwind.config");
+
+    doc.tokens = { primaryColor: "#2563eb" };
+    expect(generatePlainTailwindCode(doc)).toContain(
+      "// デザイントークン(tailwind.config に反映すること):",
+    );
+  });
 });
 
 describe("getCodeGenerator", () => {

@@ -1,0 +1,11 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`renderDesignTokensSection > matches snapshot 1`] = `
+"## デザイントークン
+
+以下の値を全体で一貫して使用すること:
+- プライマリカラー: #2563eb
+- 角丸: 0.5rem
+- 基準スペーシング: 4px
+- フォント: Noto Sans JP"
+`;

@@ -137,6 +137,16 @@ describe("generateMuiCode", () => {
     expect(code).toContain("TODO: rating を実装");
     expect(code).toContain('border: "1px dashed"');
   });
+
+  test("emits a createTheme hint only when design tokens are set", () => {
+    const doc = makeDoc();
+    expect(generateMuiCode(doc)).not.toContain("createTheme");
+
+    doc.tokens = { primaryColor: "#2563eb" };
+    expect(generateMuiCode(doc)).toContain(
+      "// デザイントークン(createTheme() に反映すること):",
+    );
+  });
 });
 
 describe("getCodeGenerator (mui)", () => {

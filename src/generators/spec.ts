@@ -10,6 +10,7 @@ import type { CatalogComponent } from "../types/catalog";
 import { getCatalogComponent } from "../catalog/catalog-data";
 import { countNodes } from "../store/tree-utils";
 import { renderFlowSection } from "./flow-mermaid";
+import { renderDesignTokensSection } from "./design-tokens";
 
 function labelOf(node: ComponentNode): string {
   if (node.type === RAW_BLOCK_TYPE) return "RawBlock";
@@ -76,6 +77,9 @@ export function generateSpecMarkdown(doc: SpecDocument): string {
   sections.push(
     `## 構造\n\n${lines.length > 0 ? lines.join("\n") : "(コンポーネントなし)"}\n\n凡例: 🔒 = 変更禁止(凍結) / ⚙ = 挙動メモあり`,
   );
+
+  const tokensSection = renderDesignTokensSection(doc.tokens);
+  if (tokensSection) sections.push(tokensSection);
 
   const flowSection = renderFlowSection(doc.flow);
   if (flowSection) sections.push(flowSection);

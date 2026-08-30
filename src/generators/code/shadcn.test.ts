@@ -120,6 +120,12 @@ describe("generateShadcnCode", () => {
   test("uncovered component types become explicit TODO blocks", () => {
     expect(generateShadcnCode(makeDoc())).toContain("TODO: rating を実装");
   });
+
+  test("emits a tailwind.config hint only when design tokens are set", () => {
+    const doc = makeDoc();
+    doc.tokens = { spacingUnit: "4px" };
+    expect(generateShadcnCode(doc)).toContain("//   基準スペーシング: 4px");
+  });
 });
 
 describe("getCodeGenerator (shadcn)", () => {
